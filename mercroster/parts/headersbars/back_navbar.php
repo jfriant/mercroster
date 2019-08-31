@@ -24,10 +24,10 @@ $contractResult=$dbf->queryselect("SELECT employer, target, start, end FROM cont
 
 $currentLocation="";
 $currentEmployer="";
-while($array=mysql_fetch_array($contractResult, MYSQL_ASSOC))
+while($array=mysqli_fetch_array($contractResult, MYSQLI_ASSOC))
 {
-  $currentLocation=$currentLocation." ".$array[target];
-  $currentEmployer=$currentEmployer." ".$array[employer];
+  $currentLocation=$currentLocation." ".$array['target'];
+  $currentEmployer=$currentEmployer." ".$array['employer'];
 }
 if($currentLocation=="")
 {
@@ -45,7 +45,7 @@ echo "Logs\n";
 echo "</div>\n";
 echo "<div class='sidetablebody'>\n";
 echo "<ul>\n";
-while($listArray = mysql_fetch_array($logTypeListResult, MYSQL_NUM))
+while($listArray = mysqli_fetch_array($logTypeListResult, MYSQLI_NUM))
 {
   $lastTopicArray=$userfuntions->getLastTopicArray();
   $logTypeArray=$userfuntions->getLogTypeArray();
@@ -81,7 +81,7 @@ echo "Administrative Units\n";
 echo "</div>\n";
 echo "<div class='sidetablebody'>\n";
 echo "<ul>\n";
-while($array = mysql_fetch_array($topLvlFormationsResult, MYSQL_NUM))
+while($array = mysqli_fetch_array($topLvlFormationsResult, MYSQLI_NUM))
 {
   if($array[0]!=null)
   {
@@ -113,6 +113,8 @@ if(isset($_SESSION['SESS_ID']) || (trim($_SESSION['SESS_ID'])!=''))
   if($guests>0)
   {
     $guestString=($guests==1) ? "{$guests} Guest" : "{$guests} Guests";
+  } else {
+      $guestString = "";
   }
 
   echo "<div class='sidetableheader'>\n";

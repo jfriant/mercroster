@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('J67bF536hx'))
 {
   header('HTTP/1.0 404 not found');
@@ -12,7 +13,7 @@ $inputFields = new InputFields;
 require("htdocs/dbsetup.php");
 $userName=$_GET['user'];
 $userName=stripslashes($userName);
-$userName=mysql_real_escape_string($userName);
+$userName=html_escape($userName);
 
 $tarray[1]="Administrator";
 $tarray[2]="Game Master";
@@ -28,7 +29,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_ID']!="" && $_SESSION['SESS_ID
   if($userName!=null || $userName!="")
   {
     $userResult = $dbf->queryselect("SELECT id, username, sitename, fname, lname, type, timeoffset, timeformat FROM members WHERE username='{$userName}';");
-    $userArray = mysql_fetch_array($userResult, MYSQL_NUM);
+    $userArray = mysqli_fetch_array($userResult, MYSQLI_NUM);
   }
   else
   {

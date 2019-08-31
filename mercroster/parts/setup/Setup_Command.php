@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('H4dc35F43cs'))
 {
 	header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
 	require("htdocs/dbsetup.php");
 	$data=stripslashes($data);
-	$data=mysql_real_escape_string($data);
+	$data=html_escape($data);
 	$data=strip_tags($data);
 	return $data;
 }
@@ -27,11 +28,11 @@ else
 
 	//Fetching used dates data
 	$datesResult = $dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-	$datesArray = mysql_fetch_array($datesResult, MYSQL_NUM);
+	$datesArray = mysqli_fetch_array($datesResult, MYSQLI_NUM);
 
 	//Fetching Command data
 	$commandResult = $dbf->queryselect("SELECT name, abbreviation, motto, image, header, icon FROM command WHERE id=1;");
-	$commandArray = mysql_fetch_array($commandResult, MYSQL_ASSOC);
+	$commandArray = mysqli_fetch_array($commandResult, MYSQLI_ASSOC);
 
 	$sdate=$datesArray[1];
 	$cdate=$datesArray[2];
@@ -323,15 +324,15 @@ else
       		{
         		echo "<li><a class='notselectedtype' href='index.php?action=command&amp;page=2'>New Page</a></li>\n";
       		}
-      		while ($pagesArray=mysql_fetch_array($pagesResult, MYSQL_ASSOC))
+      		while ($pagesArray=mysqli_fetch_array($pagesResult, MYSQLI_ASSOC))
       		{
-        		if($_GET['sub']==$pagesArray[id])
+        		if($_GET['sub']==$pagesArray['id'])
         		{
-          			echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=command&amp;page=2&amp;sub={$pagesArray[id]}'>{$pagesArray[name]}</a></li>\n";
+          			echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=command&amp;page=2&amp;sub={$pagesArray['id']}'>{$pagesArray['name']}</a></li>\n";
         		}
         		else
         		{
-          			echo "<li><a class='notselectedtype' href='index.php?action=command&amp;page=2&amp;sub={$pagesArray[id]}'>{$pagesArray[name]}</a></li>\n";
+          			echo "<li><a class='notselectedtype' href='index.php?action=command&amp;page=2&amp;sub={$pagesArray['id']}'>{$pagesArray['name']}</a></li>\n";
         		}
       		}
       		echo "</ul>\n";
@@ -346,7 +347,7 @@ else
       		{
         		$sub=strip($_GET['sub']);
         		$pagesResult=$dbf->queryselect("SELECT * FROM pages WHERE id='{$sub}';");
-        		$pagesArray=mysql_fetch_array($pagesResult, MYSQL_ASSOC);
+        		$pagesArray=mysqli_fetch_array($pagesResult, MYSQLI_ASSOC);
 
         		echo"<div id='typeeditarea' class='typeeditarea'>\n";
         		echo"<form action='index.php?action=setupquery' method='post'>\n";
@@ -356,13 +357,13 @@ else
         		echo "<th class='setuptabletext'>Name</th>\n";
         		?>
 				<td><input class="setuptabletext" name="name" type="text"
-					maxlength="100" value="<?php echo"$pagesArray[name]" ?>" /></td>
+					maxlength="100" value="<?php echo"{$pagesArray['name']}" ?>" /></td>
         		<?php
         		echo"</tr>\n";
         		//Game Data field
         		echo"<tr>\n";
         		echo "<th class='setuptablecheck'>Game Data</th>\n";
-        		if ($pagesArray[game]==1)
+        		if ($pagesArray['game']==1)
         		{
           			echo "<td><input class='setuptablecheck' name='game' type='checkbox' checked='checked' /></td>\n";
         		}
@@ -374,7 +375,7 @@ else
         		//News field
         		echo"<tr>\n";
         		echo "<th class='setuptablecheck'>Latest News</th>\n";
-        		if ($pagesArray[news]==1)
+        		if ($pagesArray['news']==1)
         		{
           			echo "<td><input class='setuptablecheck' name='news' type='checkbox' checked='checked' /></td>\n";
         		}
@@ -386,7 +387,7 @@ else
 				//Units field
         		echo"<tr>\n";
         		echo "<th class='setuptablecheck'>TO&E</th>\n";
-        		if ($pagesArray[units]==1)
+        		if ($pagesArray['units']==1)
         		{
           			echo "<td><input class='setuptablecheck' name='units' type='checkbox' checked='checked' /></td>\n";
         		}
@@ -398,7 +399,7 @@ else
         		//Notables field
         		echo"<tr>\n";
         		echo "<th class='setuptablecheck'>Notable Pilots</th>\n";
-        		if ($pagesArray[notables]==1)
+        		if ($pagesArray['notables']==1)
         		{
           			echo "<td><input class='setuptablecheck' name='notables' type='checkbox' checked='checked' /></td>\n";
         		}
@@ -408,12 +409,12 @@ else
         		}
         		echo"</tr>\n";
         		
-        		$inputFields->textarea('edittableleft', 'edittableright', 1, $pagesArray[name], 'edittablecommon', "text", $pagesArray[text]);
+        		$inputFields->textarea('edittableleft', 'edittableright', 1, $pagesArray['name'], 'edittablecommon', "text", $pagesArray['text']);
         		
 				echo"<tr>\n";
         		echo "<td colspan='2'>\n";
-        		echo "<input type='hidden' name='ID' value='{$pagesArray[id]}' />\n";
-        		echo "<input type='hidden' name='prefpos' value='{$pagesArray[prefpos]}' /> \n";
+        		echo "<input type='hidden' name='ID' value='{$pagesArray['id']}' />\n";
+        		echo "<input type='hidden' name='prefpos' value='{$pagesArray['prefpos']}' /> \n";
         		echo "<input type='hidden' name='QueryType' value='pages' /> \n";
         		echo "<input type='hidden' name='QueryAction' value='AddChange' /> \n";
         		echo "<input class='setuptablebutton' name='QueryAction' type='submit' value='Change' /> \n";
@@ -431,11 +432,11 @@ else
         		echo "<table border='0'>\n";
         		echo "<tr>\n";
         		echo "<td>\n";
-        		echo "<input type='hidden' name='ID' value='{$pagesArray[id]}' />\n";
-        		echo "<input type='hidden' name='prefpos' value='{$pagesArray[prefpos]}' />\n";
+        		echo "<input type='hidden' name='ID' value='{$pagesArray['id']}' />\n";
+        		echo "<input type='hidden' name='prefpos' value='{$pagesArray['prefpos']}' />\n";
         		echo "<input type='hidden' name='QueryType' value='pagesmove' />\n";
         		echo "<input type='hidden' name='QueryAction' value='up' />\n";
-        		if ($pagesArray[prefpos]!=1)
+        		if ($pagesArray['prefpos']!=1)
         		{
           			echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' />\n";
         		}
@@ -443,7 +444,7 @@ else
         		{
           			echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' disabled='disabled' />\n";
         		}
-        		if ($pagesArray[prefpos]!=$pagesN)
+        		if ($pagesArray['prefpos']!=$pagesN)
         		{
           			echo "<input class='toebutton' name='QueryAction' type='submit' value='Down' />\n";
         		}
@@ -569,15 +570,15 @@ else
 			}
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Name:</td>\n";
-			echo "<td class='edittableright'><input class='edittablecommon' name='name' type='text' maxlength='100' value='{$commandArray[name]}' /></td>\n";
+			echo "<td class='edittableright'><input class='edittablecommon' name='name' type='text' maxlength='100' value='{$commandArray['name']}' /></td>\n";
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Abbreviation:</td>\n";
-			echo "<td class='edittableright'><input class='edittablecommon' name='abb' 	type='text' maxlength='10' 	value='{$commandArray[abbreviation]}' /></td>\n";
+			echo "<td class='edittableright'><input class='edittablecommon' name='abb' 	type='text' maxlength='10' 	value='{$commandArray['abbreviation']}' /></td>\n";
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Motto:</td>\n";
-			echo "<td class='edittableright'><input class='edittablecommon' name='motto' type='text' maxlength='100' value='{$commandArray[motto]}' /></td>\n";
+			echo "<td class='edittableright'><input class='edittablecommon' name='motto' type='text' maxlength='100' value='{$commandArray['motto']}' /></td>\n";
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td colspan='2'>\n";
@@ -587,19 +588,19 @@ else
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Image:</td>\n";
 			echo "<td class='edittableright'>\n";
-			$inputFields->dropboxarscript($commandimages, $commandArray[image], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"commandimages\")'", true);
+			$inputFields->dropboxarscript($commandimages, $commandArray['image'], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"commandimages\")'", true);
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Icon:</td>\n";
 			echo "<td class='edittableright'>\n";
-			$inputFields->dropboxarscript($commandicons, $commandArray[icon], "icon", "edittablebox", "onchange='javascript:change_image(this.value, \"commandicons\")'", true);
+			$inputFields->dropboxarscript($commandicons, $commandArray['icon'], "icon", "edittablebox", "onchange='javascript:change_image(this.value, \"commandicons\")'", true);
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='edittableleft'>Header Image:</td>\n";
 			echo "<td class='edittableright'>\n";
-			$inputFields->dropboxarscript($commandheaders, $commandArray[header], "commandheader", "edittablebox", "onchange='javascript:change_image(this.value, \"commandheaders\")'", true);
+			$inputFields->dropboxarscript($commandheaders, $commandArray['header'], "commandheader", "edittablebox", "onchange='javascript:change_image(this.value, \"commandheaders\")'", true);
 			echo "</td>\n";
 			echo "</tr>\n";
 
@@ -615,7 +616,7 @@ else
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='imagetableimage'>\n";
-			echo "<img id='commandimages' class='imagetableimage' src='images/commandimages/$commandArray[image]' alt='$commandArray[image]' />";
+			echo "<img id='commandimages' class='imagetableimage' src='images/commandimages/{$commandArray['image']}' alt='{$commandArray['image']}' />";
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "</table>\n";
@@ -632,7 +633,7 @@ else
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='imagetableimage'>\n";
-			echo "<img id='commandicons' class='imagetableimage' src='images/commandicons/$commandArray[icon]' alt='$commandArray[icon]' />";
+			echo "<img id='commandicons' class='imagetableimage' src='images/commandicons/{$commandArray['icon']}' alt='{$commandArray['icon']}' />";
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "</table>\n";
@@ -649,7 +650,7 @@ else
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td class='imagetableimage'>\n";
-			echo "<img id='commandheaders' class='imagetableimage' src='images/commandheaders/$commandArray[header]' alt='$commandArray[header]' />";
+			echo "<img id='commandheaders' class='imagetableimage' src='images/commandheaders/{$commandArray['header']}' alt='{$commandArray['header']}' />";
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "</table>\n";

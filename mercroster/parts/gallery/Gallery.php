@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('FGk348dEDf'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,20 +9,20 @@ if(!defined('FGk348dEDf'))
 require("htdocs/dbsetup.php");
 $galleryID=$_GET['gallery'];
 $galleryID=stripslashes($galleryID);
-$galleryID=mysql_real_escape_string($galleryID);
+$galleryID=html_escape($galleryID);
 
 $typeTextArray=array("", "Log Images","Map Images","Art","Generic");
 
 $galleryResult=$dbf->queryselect("SELECT m.sitename, g.type, g.name, m.id AS userid FROM gallery g, members m WHERE g.id='{$galleryID}' AND m.username=g.user;");
 
-if(mysql_num_rows($galleryResult)==1)
+if(mysqli_num_rows($galleryResult)==1)
 {
-  $galleryArray=mysql_fetch_array($galleryResult, MYSQL_ASSOC);
+  $galleryArray=mysqli_fetch_array($galleryResult, MYSQLI_ASSOC);
   $imagesResult=$dbf->queryselect("SELECT id, name, filename, comment FROM images WHERE gallery='{$galleryID}';");
 
   echo "<div id='content'>\n";
   echo "<h1 class='headercenter'>{$galleryArray['name']}</h1>\n";
-  if(mysql_num_rows($imagesResult)>0)
+  if(mysqli_num_rows($imagesResult)>0)
   {
     echo"<div class='typecontainer' style='overflow: auto;'>\n";
     echo "<div class='genericheader'>\n";
@@ -31,7 +32,7 @@ if(mysql_num_rows($galleryResult)==1)
       echo "<a class='genericedit' href='index.php?action=editgallery&amp;gallery={$galleryID}'>Edit</a>\n";
     }
     echo "</div>\n";
-    while($array=mysql_fetch_array($imagesResult, MYSQL_ASSOC))
+    while($array=mysqli_fetch_array($imagesResult, MYSQLI_ASSOC))
     {
       echo "<table style='display: inline;'>\n";
       echo "<tr>\n";

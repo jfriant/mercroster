@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('gt5fhsb64'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data = stripslashes($data);
-  $data = mysql_real_escape_string($data);
+  $data = html_escape($data);
   $data = strip_tags($data);
   return $data;
 }
@@ -39,9 +40,9 @@ else
 }
 
 $accessResult=$dbf->queryselect("SELECT l.readpermission, l.writepermission FROM logentry r LEFT JOIN logtypes l ON r.logtype=l.id WHERE r.id='{$logID}';");
-if(mysql_num_rows($accessResult)==1)
+if(mysqli_num_rows($accessResult)==1)
 {
-  $accessArray=mysql_fetch_array($accessResult, MYSQL_NUM);
+  $accessArray=mysqli_fetch_array($accessResult, MYSQLI_NUM);
 
   if($readpermission<=$accessArray[0])
   {
@@ -50,12 +51,12 @@ if(mysql_num_rows($accessResult)==1)
     $range=15;
 
     $logResult=$dbf->queryselect("SELECT r.id, r.logtype, r.start, r.end, r.place, r.text, r.op, r.opdate, r.le, r.ledate, c.name, r.topic, r.opid FROM logentry r LEFT JOIN contracts c ON r.contract=c.ID WHERE r.id='{$logID}';");
-    $logArray=mysql_fetch_array($logResult, MYSQL_NUM) or die("Error retrieving log table.");
+    $logArray=mysqli_fetch_array($logResult, MYSQLI_NUM) or die("Error retrieving log table.");
 
     if($userfuntions->isregisterd()==1)
     {
       $lastLogResult=$dbf->queryselect("SELECT lastlogvisitedtime, lastlogvisited FROM members WHERE id='{$data}';");
-      $lastLogArray=mysql_fetch_array($lastLogResult, MYSQL_ASSOC);
+      $lastLogArray=mysqli_fetch_array($lastLogResult, MYSQLI_ASSOC);
       $lastLoginTime=$lastLogArray['lastlogvisitedtime'];
       $lastLog=$lastLogArray['lastlogvisited'];
       $lastLoginTime=strtotime($lastLoginTime);
@@ -72,7 +73,7 @@ if(mysql_num_rows($accessResult)==1)
     else
     {
       $lastLogResult=$dbf->queryselect("SELECT lastlogvisitedtime, lastlogvisited FROM guests WHERE ipaddress=INET_ATON('{$ip}');");
-      $lastLogArray=mysql_fetch_array($lastLogResult, MYSQL_ASSOC);
+      $lastLogArray=mysqli_fetch_array($lastLogResult, MYSQLI_ASSOC);
       $lastLoginTime=$lastLogArray['lastlogvisitedtime'];
       $lastLog=$lastLogArray['lastlogvisited'];
       $lastLoginTime=strtotime($lastLoginTime);
@@ -92,7 +93,7 @@ if(mysql_num_rows($accessResult)==1)
     $commentsnumber=mysql_result($commentsnumberResult, 0);
 
     //$logTypeResult=$dbf->queryselect("SELECT * FROM logtypes WHERE id='{$logArray[1]}';");
-    //$logTypeArray=mysql_fetch_array($logTypeResult, MYSQL_NUM);
+    //$logTypeArray=mysqli_fetch_array($logTypeResult, MYSQLI_NUM);
 
     $firstcommentarray=explode(".", $_GET['first']);
     $firstcommenttype=strip($firstcommentarray[0]);
@@ -109,7 +110,7 @@ if(mysql_num_rows($accessResult)==1)
     if($firstcommenttype=="msg")
     {
       $commentNumberResult=$dbf->queryselect("SELECT rownum FROM (SELECT @rownum:=@rownum+1 rownum, c.id FROM (SELECT @rownum:=0) r, comments c, logentry le WHERE le.id='{$logID}' AND c.parent=le.id) AS temp WHERE id='{$firstcommentid}';");
-      if(mysql_num_rows($accessResult)==1)
+      if(mysqli_num_rows($accessResult)==1)
       {
         $commentNumber=mysql_result($commentNumberResult, 0)-1;
         $firstcomment=(($commentNumber-($commentNumber%15)));
@@ -214,7 +215,7 @@ if(mysql_num_rows($accessResult)==1)
     if($commentsnumber>0)
     {
       $counter=1;
-      while($commentArray = mysql_fetch_array($commentResult, MYSQL_NUM))
+      while($commentArray = mysqli_fetch_array($commentResult, MYSQLI_NUM))
       {
         $originalTime=$dp->getTime($commentArray[5], $offset, $timeformat);
         $editTime=$dp->getTime($commentArray[7], $offset, $timeformat);
@@ -297,14 +298,14 @@ if(mysql_num_rows($accessResult)==1)
     if($userfuntions->isregisterd()==1)
     {
       $visitedResult=$dbf->queryselect("SELECT lastcomment FROM logsvisited WHERE member='{$data}' AND logtype='{$logArray[1]}' AND logid='{$logID}';");
-      $visitednumber=mysql_num_rows($visitedResult);
+      $visitednumber=mysqli_num_rows($visitedResult);
       if($visitednumber==0)
       {
         $lasCommentID=0;
         if($action!="news")
         {
           $lastResult=$dbf->queryselect("SELECT max(id) FROM comments WHERE parent='{$logID}';");
-          if(mysql_num_rows($lastResult)==1)
+          if(mysqli_num_rows($lastResult)==1)
           {
             $lasCommentID=mysql_result($lastResult, 0);
           }
@@ -316,7 +317,7 @@ if(mysql_num_rows($accessResult)==1)
       {
         $lasCommentID=0;
         $lastResult=$dbf->queryselect("SELECT max(id) FROM comments WHERE parent='{$logID}';");
-        if(mysql_num_rows($lastResult)==1)
+        if(mysqli_num_rows($lastResult)==1)
         {
           $lasCommentID=mysql_result($lastResult, 0);
           if(mysql_result($visitedResult, 0)<$lasCommentID)

@@ -1,17 +1,18 @@
 <?php
+include_once "includes/StringFunctions.php";
 class GuestFunctions
 {
 
   /**
    * This funtion is used to strip all kind of nasty thing out of _POST data
-   * @param <string> $data
-   * @return <string>
+   * @param string $data
+   * @return string
    */
   private function strip($data)
   {
     require("htdocs/dbsetup.php");
     $data=stripslashes($data);
-    $data=mysql_real_escape_string($data);
+    $data=html_escape($data);
     $data=strip_tags($data);
     return $data;
   }
@@ -38,12 +39,13 @@ class GuestFunctions
     $ip=$this->strip($ip);
     $time=$this->getZTime();
     $ipResult=$dbf->queryselect("SELECT COUNT(ipaddress) AS count, logins, logged FROM guests WHERE ipaddress=INET_ATON('{$ip}') GROUP BY ipaddress;");
-    $ipArray=mysql_fetch_array($ipResult, MYSQL_ASSOC);
-    if($ipArray[count]==1)
+    $ipArray=mysqli_fetch_array($ipResult, MYSQLI_ASSOC);
+    $queryArray = array();
+    if($ipArray['count']==1)
     {
-      if($ipArray[logged]==0)
+      if($ipArray['logged']==0)
       {
-        $logins=$this->strip($ipArray[logins]+1);
+        $logins=$this->strip($ipArray['logins']+1);
         if($refe!=null && $refe!="" && substr_count($refe, $path)==0)
         {
           $cc=substr_count($refe, $path);
@@ -75,13 +77,13 @@ class GuestFunctions
   public function CheckLogged($dbf)
   {
     $ipLoggedResult=$dbf->queryselect("SELECT ipaddress, lastlogin FROM guests WHERE logged='1';");
-    while($ipLoggedArray=mysql_fetch_array($ipLoggedResult, MYSQL_ASSOC))
+    while($ipLoggedArray=mysqli_fetch_array($ipLoggedResult, MYSQLI_ASSOC))
     {
       $now=time()-date("Z",time());
-      $differece=$now-strtotime($ipLoggedArray[lastlogin]);
+      $differece=$now-strtotime($ipLoggedArray['lastlogin']);
       if($differece>300)
       {
-        $this->logGuestOut($ipLoggedArray[ipaddress], $dbf);
+        $this->logGuestOut($ipLoggedArray['ipaddress'], $dbf);
       }
     }
   }
@@ -89,7 +91,9 @@ class GuestFunctions
   public function GetGuestNumber($dbf)
   {
     $guestNumberResult=$dbf->queryselect("SELECT COUNT(*) AS count FROM guests WHERE logged='1';");
-    $guestNumber=mysql_result($guestNumberResult, 0);
+    mysqli_data_seek($guestNumberResult, 0);
+    $row = mysqli_fetch_array($guestNumberResult);
+    $guestNumber = $row[0];
     return $guestNumber;
   }
 }

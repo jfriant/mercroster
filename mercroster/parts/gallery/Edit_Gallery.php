@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Ir4cwe57FdC'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,7 +9,7 @@ if(!defined('Ir4cwe57FdC'))
 require("htdocs/dbsetup.php");
 $galleryID=$_GET['gallery'];
 $galleryID=stripslashes($galleryID);
-$galleryID=mysql_real_escape_string($galleryID);
+$galleryID=html_escape($galleryID);
 
 require("includes/InputFields.php");
 $inputFields=new InputFields;
@@ -23,14 +24,14 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
   {
     $result=$dbf->queryselect("SELECT g.id, g.user, g.type, g.name, m.sitename FROM gallery g LEFT JOIN members m ON g.user=m.username WHERE g.id='$galleryID';");
 
-    if(mysql_num_rows($result)==1)
+    if(mysqli_num_rows($result)==1)
     {
-      $array=mysql_fetch_array($result, MYSQL_ASSOC);
+      $array=mysqli_fetch_array($result, MYSQLI_ASSOC);
       $topicText="{$array['sitename']}'s ";
       $submitButtonText='Save';
       $guser=$array['user'];
 
-      if($array[user]!=$_SESSION['SESS_NAME'] && $_SESSION['SESS_TYPE']!='1')
+      if($array['user']!=$_SESSION['SESS_NAME'] && $_SESSION['SESS_TYPE']!='1')
       {
         $error=true;
         $errormsg="Access denied.";
@@ -49,7 +50,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
     require("htdocs/dbsetup.php");
     $guser=$_SESSION['SESS_NAME'];
     $guser=stripslashes($guser);
-    $guser=mysql_real_escape_string($guser);
+    $guser=html_escape($guser);
   }
   if(!$error)
   {

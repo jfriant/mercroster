@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('h4yt6f9eDtu'))
 {
   header('HTTP/1.0 404 not found');
@@ -12,7 +13,7 @@ $inputFields=new InputFields;
 require("htdocs/dbsetup.php");
 $troID=$_GET['tro'];
 $troID=stripslashes($troID);
-$troID=mysql_real_escape_string($troID);
+$troID=html_escape($troID);
 
 
 
@@ -21,9 +22,9 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<'4')
   if(isset($_GET['tro']))
   {
     $troResult=$dbf->queryselect("SELECT * FROM technicalreadouts WHERE id='$troID';");
-    if(mysql_num_rows($troResult)==1)
+    if(mysqli_num_rows($troResult)==1)
     {
-      $troArray=mysql_fetch_array($troResult, MYSQL_NUM);
+      $troArray=mysqli_fetch_array($troResult, MYSQLI_NUM);
       $troType=$troArray[2];
     }
     else
@@ -37,17 +38,17 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<'4')
     require("htdocs/dbsetup.php");
     $troType=$_GET["type"];
     $troType = stripslashes($troType);
-    $troType = mysql_real_escape_string($troType);
+    $troType = html_escape($troType);
   }
 
   if(!$error)
   {
     //Validating Equipment Type
     $checkResult=$dbf->queryselect("SELECT maxweight, minweight, weightstep, name, weightscale FROM equipmenttypes WHERE id='$troType';");
-    if(mysql_num_rows($checkResult)==1)
+    if(mysqli_num_rows($checkResult)==1)
     {
       echo "<div id='content'>\n";
-      $checkArray = mysql_fetch_array($checkResult, MYSQL_NUM);
+      $checkArray = mysqli_fetch_array($checkResult, MYSQLI_NUM);
       $MaxWeight=$checkArray[0];
       $MinWeight=$checkArray[1];
       $WeightModulo=$checkArray[2];

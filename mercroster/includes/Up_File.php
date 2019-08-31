@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 class Upfile
 {
   private $_logging;
@@ -15,7 +16,7 @@ class Upfile
   {
     require("htdocs/dbsetup.php");
     $data=stripslashes($data);
-    $data=mysql_real_escape_string($data);
+    $data=html_escape($data);
     $data=strip_tags($data);
     return $data;
   }
@@ -76,11 +77,11 @@ class Upfile
     }
     if($errmsg!="")
     {
-      return("location:index.php?action=command&page=4&sub={$sub}&mgs={$errmsg}");
+      return("location:index.php?action=command&page=7&sub={$sub}&mgs={$errmsg}");
     }
     else
     {
-      return("location:index.php?action=command&page=4&sub={$sub}");
+      return("location:index.php?action=command&page=7&sub={$sub}");
     }
   }
 

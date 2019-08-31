@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('HyG34v5dj4'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data=stripslashes($data);
-  $data=mysql_real_escape_string($data);
+  $data=html_escape($data);
   $data=strip_tags($data);
   return $data;
 }
@@ -27,14 +28,14 @@ $range=30;
 
 //Fetching log type information
 $logTypeResult=$dbf->queryselect("SELECT id, type, writepermission, readpermission FROM logtypes WHERE id='{$logType}';");
-if(mysql_num_rows($logTypeResult)==1)
+if(mysqli_num_rows($logTypeResult)==1)
 {
   $logidArray=array();
   array_push($logidArray, "0");
   $lastCommentArray=array();
   array_push($lastCommentArray, "0");
 
-  $logTypeA=mysql_fetch_array($logTypeResult, MYSQL_ASSOC); //id, type, writepermission, readpermission
+  $logTypeA=mysqli_fetch_array($logTypeResult, MYSQLI_ASSOC); //id, type, writepermission, readpermission
 
   //$logResult=$dbf->queryselect("SELECT id, start, place, op, opdate, topic, logtype FROM logentry WHERE logtype='{$logType}' ORDER BY start DESC, id DESC LIMIT $first, $range;");
   $logResult=$dbf->queryselect("SELECT r.id, r.start, r.place, r.op, r.opdate, r.topic, r.logtype, max(c.id) AS lastcomment, COUNT(c.id) AS comments, views FROM logentry r LEFT JOIN comments c ON r.id=c.parent WHERE logtype='{$logType}' GROUP BY r.id ORDER BY start DESC, id DESC LIMIT $first, $range;");
@@ -50,19 +51,19 @@ if(mysql_num_rows($logTypeResult)==1)
   {
     $permissionlimit=$_SESSION['SESS_TYPE'];
     $visitedLogsResult=$dbf->queryselect("SELECT logid, lastcomment FROM logsvisited WHERE logtype='{$logType}' AND member='{$data}' ORDER BY logid ASC;");
-    while($array=mysql_fetch_array($visitedLogsResult, MYSQL_ASSOC))
+    while($array=mysqli_fetch_array($visitedLogsResult, MYSQLI_ASSOC))
     {
-      array_push($logidArray, "{$array[logid]}");
-      array_push($lastCommentArray, "{$array[lastcomment]}");
+      array_push($logidArray, "{$array['logid']}");
+      array_push($lastCommentArray, "{$array['lastcomment']}");
     }
   }
 
-  if($permissionlimit<=$logTypeA[readpermission] && $permissionlimit!=0)
+  if($permissionlimit<=$logTypeA['readpermission'] && $permissionlimit!=0)
   {
     echo "<div id='content'>\n";
-    echo "<h1 class='headercenter'>{$logTypeA[type]}s</h1>\n";
+    echo "<h1 class='headercenter'>{$logTypeA['type']}s</h1>\n";
     //We have permission to see these logs
-    $permission=$logTypeA[writepermission];
+    $permission=$logTypeA['writepermission'];
     if($rnumber>0)
     {
       //there is logs to see
@@ -76,7 +77,7 @@ if(mysql_num_rows($logTypeResult)==1)
       {
         echo "<div class='postlinks' id='postup'>\n";
         echo "<ul>\n";
-        echo "<li><a href='index.php{$add}'>Add {$logTypeA[type]}</a></li>\n";
+        echo "<li><a href='index.php{$add}'>Add {$logTypeA['type']}</a></li>\n";
         echo "</ul>\n";
         echo "</div>\n";
       }
@@ -99,19 +100,19 @@ if(mysql_num_rows($logTypeResult)==1)
       echo "</tr>\n";
       echo "</thead>\n";
       echo "<tbody class='rostertable'>\n";
-      while($array=mysql_fetch_array($logResult, MYSQL_ASSOC))
+      while($array=mysqli_fetch_array($logResult, MYSQLI_ASSOC))
       {
-        $date=$dp->datestring($array[start]);
-        $opdate=$dp->getTime($array[opdate], $offset, $timeformat);
+        $date=$dp->datestring($array['start']);
+        $opdate=$dp->getTime($array['opdate'], $offset, $timeformat);
         echo "<tr>\n";
         if(isset($_SESSION['SESS_ID']) || (trim($_SESSION['SESS_ID'])!=''))
         {
           echo "<td class='logimage'>";
-          if(array_search($array[id], $logidArray)==false)
+          if(array_search($array['id'], $logidArray)==false)
           {
             echo "<img src='./images/small/newtopic3.png' alt='olde' />";
           }
-          else if($lastCommentArray[array_search($array[id], $logidArray)]<$array[lastcomment])
+          else if($lastCommentArray[array_search($array['id'], $logidArray)]<$array['lastcomment'])
           {
             echo "<img src='./images/small/oldnewtopic3.png' alt='com' />";
           }
@@ -121,11 +122,11 @@ if(mysql_num_rows($logTypeResult)==1)
           }
           echo "</td>\n";
         }
-        echo "<td class='logtopic'><a class='logtable' href='index.php?action=log&amp;log={$array[id]}&amp;first=lst.0'>{$array[topic]}</a></td>\n";
+        echo "<td class='logtopic'><a class='logtable' href='index.php?action=log&amp;log={$array['id']}&amp;first=lst.0'>{$array['topic']}</a></td>\n";
         echo "<td class='logdate'>{$date}</td>\n";
         echo "<td class='logview'>{$array['comments']}</td>\n";
         echo "<td class='logview'>{$array['views']}</td>\n";
-        echo "<td class='logposter'>{$opdate}<br /> by {$array[op]}</td>\n";
+        echo "<td class='logposter'>{$opdate}<br /> by {$array['op']}</td>\n";
         echo "</tr>\n";
       }
       echo "</tbody>\n";
@@ -138,7 +139,7 @@ if(mysql_num_rows($logTypeResult)==1)
       {
         echo "<div class='postlinks' id='postdown'>\n";
         echo "<ul>\n";
-        echo "<li><a href='index.php{$add}'>Add {$logTypeA[type]}</a></li>\n";
+        echo "<li><a href='index.php{$add}'>Add {$logTypeA['type']}</a></li>\n";
         echo "</ul>\n";
         echo "</div>\n";
       }

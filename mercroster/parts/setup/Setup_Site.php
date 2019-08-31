@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('huy5g4Ghj4H'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data=stripslashes($data);
-  $data=mysql_real_escape_string($data);
+  $data=html_escape($data);
   $data=strip_tags($data);
   return $data;
 }
@@ -210,7 +211,7 @@ else
       require("htdocs/dbsetup.php");
       $first=$_GET['first'];
       $first=stripslashes($first);
-      $first=mysql_real_escape_string($first);
+      $first=html_escape($first);
 
       $range=30;
 
@@ -224,7 +225,7 @@ else
       $pb->generatebarlink($rnumber, $first, $range, $link, $add, $addtype);
 
       echo "<hr />\n";
-      $guestnumber=mysql_num_rows($guestResult);
+      $guestnumber=mysqli_num_rows($guestResult);
       if($guestnumber>0)
       {
         echo "<table class='guesttable' border='0'>\n";
@@ -238,11 +239,11 @@ else
 
         echo "</tr>\n";
         echo "</thead>\n";
-        while($guestArray=mysql_fetch_array($guestResult, MYSQL_ASSOC))
+        while($guestArray=mysqli_fetch_array($guestResult, MYSQLI_ASSOC))
         {
           echo "<tr>\n";
           echo "<td class='rostertable'>\n";
-          if($guestArray[logged]==1)
+          if($guestArray['logged']==1)
           {
             echo "<img src='./images/small/online.png' alt='on' />";
           }
@@ -251,11 +252,11 @@ else
             echo "<img src='./images/small/offline.png' alt='off' />";
           }
           echo "</td>\n";
-          echo "<td class='guesttable'>{$guestArray[ip]}</td>\n";
-          echo "<td class='guesttable'>{$guestArray[logins]}</td>\n";
-          $lastLogTime="".$dp->getTime($guestArray[lastlogin], $offset, $timeformat);
+          echo "<td class='guesttable'>{$guestArray['ip']}</td>\n";
+          echo "<td class='guesttable'>{$guestArray['logins']}</td>\n";
+          $lastLogTime="".$dp->getTime($guestArray['lastlogin'], $offset, $timeformat);
           echo "<td class='guesttable'>{$lastLogTime}</td>\n";
-          echo "<td class='guesttable'>{$guestArray[referer]}</td>\n";
+          echo "<td class='guesttable'>{$guestArray['referer']}</td>\n";
 
           echo "</tr>\n";
         }
@@ -279,7 +280,7 @@ else
       
   	  echo"<form action='index.php?action=setupsitequery' method='post'>\n";
       echo"<table border='0'>\n";
-      while($optionArray=mysql_fetch_array($optionResult, MYSQL_NUM)) {
+      while($optionArray=mysqli_fetch_array($optionResult, MYSQLI_NUM)) {
       	echo"<tr>";
       	echo "<th class='setuptablebox'>{$optionArray[1]}</th>\n";
       	if ($optionArray[2]==1)
@@ -333,15 +334,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=site&amp;page=1'>New Log Type</a></li>\n";
       }
-      while ($logArray=mysql_fetch_array($logResult, MYSQL_ASSOC))
+      while ($logArray=mysqli_fetch_array($logResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$logArray[id])
+        if($_GET['sub']==$logArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=site&amp;page=1&amp;sub={$logArray[id]}'>{$logArray[type]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=site&amp;page=1&amp;sub={$logArray['id']}'>{$logArray['type']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=site&amp;page=1&amp;sub={$logArray[id]}'>{$logArray[type]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=site&amp;page=1&amp;sub={$logArray['id']}'>{$logArray['type']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -356,7 +357,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $logTypeResult=$dbf->queryselect("SELECT * FROM logtypes WHERE id='{$sub}';");
-        $logTypeArray=mysql_fetch_array($logTypeResult, MYSQL_ASSOC);
+        $logTypeArray=mysqli_fetch_array($logTypeResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
         echo"<form action='index.php?action=setupsitequery' method='post'>\n";
@@ -366,7 +367,7 @@ else
         echo "<th class='setuptabletext'>Log type</th>\n";
         ?>
 <td><input class="setuptabletext" name="logtype" type="text"
-	maxlength="100" value="<?php echo"$logTypeArray[type]" ?>" /></td>
+	maxlength="100" value="<?php echo"{$logTypeArray['type']}" ?>" /></td>
         <?php
         echo"</tr>\n";
         //Read Permission
@@ -375,7 +376,7 @@ else
         echo "<td><select class='setuptablebox' name='readpermission'>\n";
         for($i=1; $i<=6; $i++)
         {
-          if($i==$logTypeArray[readpermission])
+          if($i==$logTypeArray['readpermission'])
           {
             echo "<option value='{$i}' selected='selected'>{$tarray[$i]}</option>\n";
           }
@@ -392,7 +393,7 @@ else
         echo "<td><select class='setuptablebox' name='writepermission'>\n";
         for($i=1; $i<=5; $i++)
         {
-          if($i==$logTypeArray[writepermission])
+          if($i==$logTypeArray['writepermission'])
           {
             echo "<option value='{$i}' selected='selected'>{$tarray[$i]}</option>\n";
           }
@@ -406,7 +407,7 @@ else
         //Start field
         echo"<tr>\n";
         echo "<th class='setuptablecheck'>Starting Time</th>\n";
-        if ($logTypeArray[start]==1)
+        if ($logTypeArray['start']==1)
         {
           echo "<td><input class='setuptablecheck' name='start' type='checkbox' checked='checked' /></td>\n";
         }
@@ -418,7 +419,7 @@ else
         //End Field
         echo"<tr>\n";
         echo "<th class='setuptablecheck'>Ending Time</th>\n";
-        if ($logTypeArray[end]==1)
+        if ($logTypeArray['end']==1)
         {
           echo "<td><input class='setuptablecheck' name='end' type='checkbox' checked='checked' /></td>\n";
         }
@@ -430,7 +431,7 @@ else
         //Location Field
         echo"<tr>\n";
         echo "<th class='setuptablecheck'>Location</th>\n";
-        if ($logTypeArray[location]==1)
+        if ($logTypeArray['location']==1)
         {
           echo "<td><input class='setuptablecheck' name='location' type='checkbox' checked='checked' /></td>\n";
         }
@@ -442,7 +443,7 @@ else
         //Text Field
         echo"<tr>\n";
         echo "<th class='setuptablecheck'>Text Field</th>\n";
-        if ($logTypeArray[text] == 1)
+        if ($logTypeArray['text'] == 1)
         {
           echo "<td><input class='setuptablecheck' name='text' type='checkbox' checked='checked' /></td>\n";
         }
@@ -454,7 +455,7 @@ else
         //Contract Field
         echo"<tr>\n";
         echo "<th class='setuptablecheck'>Contract Field</th>\n";
-        if ($logTypeArray[contract] == 1)
+        if ($logTypeArray['contract'] == 1)
         {
           echo "<td><input class='setuptablecheck' name='contract' type='checkbox' checked='checked' /></td>\n";
         }
@@ -466,12 +467,12 @@ else
 
         echo"<tr>\n";
         echo "<td colspan='2'>\n";
-        echo "<input type='hidden' name='ID' value='{$logTypeArray[id]}' />\n";
-        echo "<input type='hidden' name='prefpos' value='{$logTypeArray[prefpos]}' /> \n";
+        echo "<input type='hidden' name='ID' value='{$logTypeArray['id']}' />\n";
+        echo "<input type='hidden' name='prefpos' value='{$logTypeArray['prefpos']}' /> \n";
         echo "<input type='hidden' name='QueryType' value='logtype' /> \n";
         echo "<input type='hidden' name='QueryAction' value='AddChange' /> \n";
         echo "<input class='setuptablebutton' name='QueryAction' type='submit' value='Change' /> \n";
-        if (!in_array($logTypeArray[id], $usedlogtypeArray))
+        if (!in_array($logTypeArray['id'], $usedlogtypeArray))
         {
           echo "<input class='setuptablebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }
@@ -492,11 +493,11 @@ else
         echo "<table border='0'>\n";
         echo "<tr>\n";
         echo "<td>\n";
-        echo "<input type='hidden' name='ID' value='{$logTypeArray[id]}' />\n";
-        echo "<input type='hidden' name='prefpos' value='{$logTypeArray[prefpos]}' />\n";
+        echo "<input type='hidden' name='ID' value='{$logTypeArray['id']}' />\n";
+        echo "<input type='hidden' name='prefpos' value='{$logTypeArray['prefpos']}' />\n";
         echo "<input type='hidden' name='QueryType' value='logtypemove' />\n";
         echo "<input type='hidden' name='QueryAction' value='up' />\n";
-        if ($logTypeArray[prefpos]!=1)
+        if ($logTypeArray['prefpos']!=1)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' />\n";
         }
@@ -504,7 +505,7 @@ else
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' disabled='disabled' />\n";
         }
-        if ($logTypeArray[prefpos]!=$logTypes)
+        if ($logTypeArray['prefpos']!=$logTypes)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Down' />\n";
         }

@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 class Parser
 {
   /**
@@ -10,7 +11,7 @@ class Parser
   {
     require("htdocs/dbsetup.php");
     $data=stripslashes($data);
-    $data=mysql_real_escape_string($data);
+    $data=html_escape($data);
     $data=strip_tags($data);
     return $data;
   }

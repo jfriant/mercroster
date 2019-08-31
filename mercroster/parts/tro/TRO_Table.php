@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('gT6uj4D67J'))
 {
   header('HTTP/1.0 404 not found');
@@ -12,11 +13,11 @@ $bbf = new BBFunctions;
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 
 $vehicleType=$_GET["type"];
 $vehicleType=stripslashes($vehicleType);
-$vehicleType=mysql_real_escape_string($vehicleType);
+$vehicleType=html_escape($vehicleType);
 
 require("includes/PageBar.php");
 $pb = new PageBar;
@@ -27,7 +28,7 @@ if(isset($_GET["type"]))
 {
   //Validating Personel Type
   $checkResult = $dbf->queryselect("SELECT name FROM equipmenttypes WHERE id='$vehicleType';");
-  if(mysql_num_rows($checkResult)==1)
+  if(mysqli_num_rows($checkResult)==1)
   {
     //Need to determine what type of roster to fecth from database
     $query = "SELECT id, name, weight, text FROM technicalreadouts WHERE type='$vehicleType' ORDER BY";
@@ -42,7 +43,7 @@ if(isset($_GET["type"]))
     }
     $vehicleSQLQeury = $query. " " . $order . " LIMIT $first, $range;";
     $vehicleResult = $dbf->queryselect($vehicleSQLQeury);
-    $checkArray=mysql_fetch_array($checkResult, MYSQL_NUM);
+    $checkArray=mysqli_fetch_array($checkResult, MYSQLI_NUM);
 
     $rResult=$dbf->queryselect("SELECT COUNT(*) count FROM technicalreadouts WHERE type='$vehicleType';");
     $rnumber=mysql_result($rResult, 0);
@@ -69,7 +70,7 @@ if(isset($_GET["type"]))
       echo "</tr>\n";
       echo "</thead>\n";
       echo "<tbody class='rostertable'>\n";
-      while($array=mysql_fetch_array($vehicleResult, MYSQL_NUM))
+      while($array=mysqli_fetch_array($vehicleResult, MYSQLI_NUM))
       {
         echo "<tr>\n";
         if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']=='1')
@@ -134,7 +135,7 @@ else
   echo "</thead>\n";
   echo "<tbody class='rostertable'>\n";
   $counter=0;
-  while($array=mysql_fetch_array($equipmentTypeResult, MYSQL_ASSOC))
+  while($array=mysqli_fetch_array($equipmentTypeResult, MYSQLI_ASSOC))
   {
     if($array['vcount']!=0 || $array['vcount']!="" || ($_SESSION['SESS_TYPE']<=4 && $_SESSION['SESS_TYPE']>=1))
     {

@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('gt5fhsb64'))
 {
   header('HTTP/1.0 404 not found');
@@ -13,7 +14,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data = stripslashes($data);
-  $data = mysql_real_escape_string($data);
+  $data = html_escape($data);
   $data = strip_tags($data);
   return $data;
 }
@@ -30,14 +31,14 @@ else
 $logID=strip($_GET['log']);
 
 $accessResult=$dbf->queryselect("SELECT l.readpermission, l.writepermission FROM logentry r LEFT JOIN logtypes l ON r.logtype=l.id WHERE r.id='{$logID}';");
-if(mysql_num_rows($accessResult)==1)
+if(mysqli_num_rows($accessResult)==1)
 {
-  $accessArray=mysql_fetch_array($accessResult, MYSQL_NUM);
+  $accessArray=mysqli_fetch_array($accessResult, MYSQLI_NUM);
 
   if($readpermission<=$accessArray[0])
   {
     $logResult=$dbf->queryselect("SELECT r.id, r.logtype, r.start, r.end, r.place, r.text, r.op, r.opdate, r.le, r.ledate, c.name, r.topic, r.opid FROM logentry r LEFT JOIN contracts c ON r.contract=c.ID WHERE r.id='{$logID}';");
-    $logArray=mysql_fetch_array($logResult, MYSQL_NUM) or die("Error retrieving log table.");
+    $logArray=mysqli_fetch_array($logResult, MYSQLI_NUM) or die("Error retrieving log table.");
 
     //Get date information
     $date=$dp->datestring($logArray[2]);

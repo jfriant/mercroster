@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('hr2sDs257S8'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data=stripslashes($data);
-  $data=mysql_real_escape_string($data);
+  $data=html_escape($data);
   $data=strip_tags($data);
   return $data;
 }
@@ -120,15 +121,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=2'>New skill</a></li>\n";
       }
-      while ($skillArray=mysql_fetch_array($skillTypeResult, MYSQL_ASSOC))
+      while ($skillArray=mysqli_fetch_array($skillTypeResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$skillArray[id])
+        if($_GET['sub']==$skillArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=2&amp;sub={$skillArray[id]}'>{$skillArray[name]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=2&amp;sub={$skillArray['id']}'>{$skillArray['name']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=2&amp;sub={$skillArray[id]}'>{$skillArray[name]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=2&amp;sub={$skillArray['id']}'>{$skillArray['name']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -138,7 +139,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $skillTypesResult=$dbf->queryselect("SELECT * FROM skilltypes WHERE ID='{$sub}';");
-        $skillTypesArray=mysql_fetch_array($skillTypesResult, MYSQL_ASSOC);
+        $skillTypesArray=mysqli_fetch_array($skillTypesResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
 
@@ -153,18 +154,18 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Name</th>\n";
-        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$skillTypesArray[name]}' /></td>\n";
+        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$skillTypesArray['name']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Short name</th>\n";
-        echo"<td><input class='toelong' name='shortname' type='text' maxlength='60' value='{$skillTypesArray[shortname]}' /></td>\n";
+        echo"<td><input class='toelong' name='shortname' type='text' maxlength='60' value='{$skillTypesArray['shortname']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
-        echo "<td colspan='2'><input type='hidden' name='ID' value='{$skillTypesArray[id]}' />\n";
+        echo "<td colspan='2'><input type='hidden' name='ID' value='{$skillTypesArray['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='SkillType' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
         //Delete not used skilltype
-        if (!in_array($skillTypesArray[id], $usedSkillTypeArray))
+        if (!in_array($skillTypesArray['id'], $usedSkillTypeArray))
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }
@@ -220,15 +221,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=3'>New Profession</a></li>\n";
       }
-      while ($crewArray=mysql_fetch_array($crewResult, MYSQL_ASSOC))
+      while ($crewArray=mysqli_fetch_array($crewResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$crewArray[id])
+        if($_GET['sub']==$crewArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=3&amp;sub={$crewArray[id]}'>{$crewArray[type]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=3&amp;sub={$crewArray['id']}'>{$crewArray['type']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=3&amp;sub={$crewArray[id]}'>{$crewArray[type]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=3&amp;sub={$crewArray['id']}'>{$crewArray['type']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -237,10 +238,10 @@ else
       $equipmentTypeResult=$dbf->queryselect("SELECT * FROM equipmenttypes ORDER BY prefpos ASC;");
       $equipmenttypes=mysql_result($dbf->queryselect("SELECT COUNT(*) count FROM equipmenttypes;"), 0);
 
-      $equipmentTypersArray;
-      $equipmentTypersArrayID;
+      $equipmentTypersArray = array();
+      $equipmentTypersArrayID = array();
       $counter=0;
-      while ($equipmentTypeArray = mysql_fetch_array($equipmentTypeResult, MYSQL_NUM))
+      while ($equipmentTypeArray = mysqli_fetch_array($equipmentTypeResult, MYSQLI_NUM))
       {
         $equipmentTypersArrayID[$counter] = $equipmentTypeArray[0];
         $equipmentTypersArray[$counter] = $equipmentTypeArray[1];
@@ -251,7 +252,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $crewResult=$dbf->queryselect("SELECT * FROM crewtypes WHERE ID='{$sub}';");
-        $crewArray=mysql_fetch_array($crewResult, MYSQL_ASSOC);
+        $crewArray=mysqli_fetch_array($crewResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
 
@@ -266,18 +267,18 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Name</th>\n";
-        echo"<td><input class='toelong' name='crewtype' type='text' maxlength='60' value='{$crewArray[type]}' /></td>\n";
+        echo"<td><input class='toelong' name='crewtype' type='text' maxlength='60' value='{$crewArray['type']}' /></td>\n";
         echo"</tr>\n";
 
         echo"<tr>\n";
         echo"<th class='toelong'>Equipment</th>\n";
         echo"<td>\n";
-        if ($crewArray[equipment])
+        if ($crewArray['equipment'])
         {
           echo "<select class='toelong' name='vehicletype'>\n";
           for ($counter=0; $counter<sizeof($equipmentTypersArray); $counter++)
           {
-            if ($equipmentTypersArrayID[$counter] == $crewArray[vehicletype])
+            if ($equipmentTypersArrayID[$counter] == $crewArray['vehicletype'])
             {
               echo "<option value='$equipmentTypersArrayID[$counter]' selected='selected'>{$equipmentTypersArray[$counter]}</option>\n";
             }
@@ -298,7 +299,7 @@ else
         echo"</tr>\n";
         echo"<tr>\n";
         echo"<th class=''>Squad Leader</th>\n";
-        if ($crewArray[squad])
+        if ($crewArray['squad'])
         {
           echo "<td><input class='toeshort' name='squad' type='checkbox' checked='checked' /></td>\n";
         }
@@ -310,7 +311,7 @@ else
 
         echo"<tr>\n";
         echo"<th class=''>Equippable</th>\n";
-        if ($crewArray[equipment])
+        if ($crewArray['equipment'])
         {
           echo "<td><input class='toeshort' name='equippable' type='checkbox' checked='checked' /></td>\n";
         }
@@ -322,9 +323,9 @@ else
         //Buttons
         echo "<tr>\n";
         echo "<td>\n";
-        echo "<input type='hidden' name='ID' value='{$crewArray[id]}' /> \n";
+        echo "<input type='hidden' name='ID' value='{$crewArray['id']}' /> \n";
         echo "<input type='hidden' name='QueryType' value='Crewtype' /> \n";
-        echo "<input type='hidden' name='prefpos' value='{$crewArray[prefpos]}' />\n";
+        echo "<input type='hidden' name='prefpos' value='{$crewArray['prefpos']}' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
 
@@ -337,13 +338,13 @@ else
         echo "<hr />\n";
 
         //Skills
-        $requirementResult=$dbf->queryselect("SELECT sr.id, st.name FROM skillrequirements sr, skilltypes st WHERE sr.personneltype='{$crewArray[id]}' AND sr.skilltype=st.id;");
+        $requirementResult=$dbf->queryselect("SELECT sr.id, st.name FROM skillrequirements sr, skilltypes st WHERE sr.personneltype='{$crewArray['id']}' AND sr.skilltype=st.id;");
         $skillTypeArray=$dbf->resulttoarray($dbf->queryselect("SELECT id, name FROM skilltypes ORDER BY name ASC;"));
         $usedSkillTypeArray=array();
         $reqconter=0;
         echo "<b>Requirements</b>\n";
         echo "<table border='0'>\n";
-        while($array =  mysql_fetch_array($requirementResult, MYSQL_NUM))
+        while($array =  mysqli_fetch_array($requirementResult, MYSQLI_NUM))
         {
           $reqconter++;
           $usedSkillTypeArray[sizeof($usedSkillTypeArray)]=$array[1];
@@ -354,7 +355,7 @@ else
           echo "<form action='index.php?action=setupquery' method='post'>\n";
           echo "<div>\n";
           echo "<input type='hidden' name='ID' value='{$array[0]}' />\n";
-          echo "<input type='hidden' name='personneltype' value='{$crewArray[id]}' />\n";
+          echo "<input type='hidden' name='personneltype' value='{$crewArray['id']}' />\n";
           echo "<input type='hidden' name='QueryType' value='SkillRequirement' />\n";
           echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Remove' onclick='return confirmSubmit(\"Remove\")' />\n";
           echo "</div>\n";
@@ -399,7 +400,7 @@ else
         echo "</td>\n";
         echo "<td>\n";
         echo "<input type='hidden' name='QueryType' value='SkillRequirement' />\n";
-        echo "<input type='hidden' name='personneltype' value='{$crewArray[id]}' />\n";
+        echo "<input type='hidden' name='personneltype' value='{$crewArray['id']}' />\n";
         if($counter==0)
         {
           echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Add' disabled='disabled'/>\n";
@@ -421,11 +422,11 @@ else
         echo "<table border='0'>\n";
         echo "<tr>\n";
         echo "<td>\n";
-        echo "<input type='hidden' name='ID' value='$crewArray[id]' />\n";
-        echo "<input type='hidden' name='prefpos' value='$crewArray[prefpos]' />\n";
+        echo "<input type='hidden' name='ID' value='{$crewArray['id']}' />\n";
+        echo "<input type='hidden' name='prefpos' value='{$crewArray['prefpos']}' />\n";
         echo "<input type='hidden' name='QueryType' value='personneltypemove' />\n";
         echo "<input type='hidden' name='QueryAction' value='up' />\n";
-        if ($crewArray[prefpos]!=1)
+        if ($crewArray['prefpos']!=1)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' />\n";
         }
@@ -433,7 +434,7 @@ else
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' disabled='disabled' />\n";
         }
-        if ($crewArray[prefpos]!=$crewtypes)
+        if ($crewArray['prefpos']!=$crewtypes)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Down' />\n";
         }
@@ -507,15 +508,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=4'>New Unit Type</a></li>\n";
       }
-      while ($unitArray=mysql_fetch_array($unitTypeResult, MYSQL_ASSOC))
+      while ($unitArray=mysqli_fetch_array($unitTypeResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$unitArray[id])
+        if($_GET['sub']==$unitArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=4&amp;sub={$unitArray[id]}'>{$unitArray[name]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=4&amp;sub={$unitArray['id']}'>{$unitArray['name']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=4&amp;sub={$unitArray[id]}'>{$unitArray[name]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=4&amp;sub={$unitArray['id']}'>{$unitArray['name']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -525,7 +526,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $unitTypesResult=$dbf->queryselect("SELECT * FROM unittypes WHERE id='{$sub}';");
-        $unitTypesArray=mysql_fetch_array($unitTypesResult, MYSQL_ASSOC);
+        $unitTypesArray=mysqli_fetch_array($unitTypesResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
 
@@ -540,18 +541,18 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Unit Type</th>\n";
-        echo"<td><input class='toelong' name='unittype' type='text' maxlength='60' value='{$unitTypesArray[name]}' /></td>\n";
+        echo"<td><input class='toelong' name='unittype' type='text' maxlength='60' value='{$unitTypesArray['name']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Color</th>\n";
-        echo"<td><input class='toelong' name='color' type='text' maxlength='60' value='{$unitTypesArray[color]}' /></td>\n";
+        echo"<td><input class='toelong' name='color' type='text' maxlength='60' value='{$unitTypesArray['color']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
-        echo "<td colspan='2'><input type='hidden' name='ID' value='{$unitTypesArray[id]}' />\n";
+        echo "<td colspan='2'><input type='hidden' name='ID' value='{$unitTypesArray['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='UnitType' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
         //Delete not used skilltype
-        if (!in_array($unitTypesArray[id], $usedUnitTypeArray))
+        if (!in_array($unitTypesArray['id'], $usedUnitTypeArray))
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }
@@ -628,15 +629,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=5'>New Unit Level</a></li>\n";
       }
-      while ($unitArray=mysql_fetch_array($unitLevelResult, MYSQL_ASSOC))
+      while ($unitArray=mysqli_fetch_array($unitLevelResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$unitArray[id])
+        if($_GET['sub']==$unitArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=5&amp;sub={$unitArray[id]}'>{$unitArray[name]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=5&amp;sub={$unitArray['id']}'>{$unitArray['name']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=5&amp;sub={$unitArray[id]}'>{$unitArray[name]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=5&amp;sub={$unitArray['id']}'>{$unitArray['name']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -646,7 +647,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $unitLevelResult=$dbf->queryselect("SELECT * FROM unitlevel WHERE id='{$sub}';");
-        $unitLevelArray=mysql_fetch_array($unitLevelResult, MYSQL_ASSOC);
+        $unitLevelArray=mysqli_fetch_array($unitLevelResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
 
@@ -661,22 +662,22 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Name</th>\n";
-        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$unitLevelArray[name]}' /></td>\n";
+        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$unitLevelArray['name']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Picture</th>\n";
         echo"<td>\n";
-        $inputFields->dropboxar($unittypeimages, $unitLevelArray[picture], "picture", "edittablebox");
+        $inputFields->dropboxar($unittypeimages, $unitLevelArray['picture'], "picture", "edittablebox");
         echo"</td>\n";
-        //echo"<td><input class='toelong' name='picture' type='text' maxlength='60' value='{$unitTypesArray[picture]}' /></td>\n";
+        //echo"<td><input class='toelong' name='picture' type='text' maxlength='60' value='{$unitTypesArray['picture']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
-        echo "<td colspan='2'><input type='hidden' name='ID' value='{$unitLevelArray[id]}' />\n";
-        echo "<input type='hidden' name='prefpos' value='{$unitLevelArray[prefpos]}' /> \n";
+        echo "<td colspan='2'><input type='hidden' name='ID' value='{$unitLevelArray['id']}' />\n";
+        echo "<input type='hidden' name='prefpos' value='{$unitLevelArray['prefpos']}' /> \n";
         echo "<input type='hidden' name='QueryType' value='UnitLevel' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
         //Delete not used skilltype
-        if (!in_array($unitLevelArray[id], $usedUnitLevelArray))
+        if (!in_array($unitLevelArray['id'], $usedUnitLevelArray))
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }
@@ -695,11 +696,11 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<td>\n";
-        echo"<input type='hidden' name='ID' value='{$unitLevelArray[id]}' />\n";
-        echo"<input type='hidden' name='prefpos' value='{$unitLevelArray[prefpos]}' />\n";
+        echo"<input type='hidden' name='ID' value='{$unitLevelArray['id']}' />\n";
+        echo"<input type='hidden' name='prefpos' value='{$unitLevelArray['prefpos']}' />\n";
         echo"<input type='hidden' name='QueryType' value='unitlevelmove' />\n";
         //Up button
-        if ($unitLevelArray[prefpos]!=1)
+        if ($unitLevelArray['prefpos']!=1)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' />\n";
         }
@@ -707,7 +708,7 @@ else
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' disabled='disabled' />\n";
         }
-        if ($unitLevelArray[prefpos]!=$unitleveltypes)
+        if ($unitLevelArray['prefpos']!=$unitleveltypes)
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Down' />\n";
         }
@@ -724,6 +725,8 @@ else
       }
       else
       {
+          if (isset($unitTypesArray)) { $this_picture = $unitTypesArray['picture']; } else { $this_picture = ""; }
+
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
         echo "<form action='index.php?action=setupquery' method='post'>\n";
         echo "<table border='0'>\n";
@@ -734,7 +737,7 @@ else
         echo"<tr>\n";
         echo"<th class='toelong'>Picture</th>\n";
         echo"<td>\n";
-        $inputFields->dropboxar($unittypeimages, $unitTypesArray[picture], "picture", "edittablebox");
+        $inputFields->dropboxar($unittypeimages, $this_picture, "picture", "edittablebox");
         echo"</td>\n";
         echo "</tr>\n";
         echo "<tr>\n";
@@ -772,7 +775,7 @@ else
 
        <table border="0">
        <?php
-       while ($unitTypeArray = mysql_fetch_array($unitLevelResult, MYSQL_NUM))
+       while ($unitTypeArray = mysqli_fetch_array($unitLevelResult, MYSQLI_NUM))
        {
        ?>
        <tr>
@@ -878,7 +881,7 @@ else
 		</td>
 	</tr>
 	<?php
-	while ($rankArray = mysql_fetch_array($rankResult, MYSQL_NUM))
+	while ($rankArray = mysqli_fetch_array($rankResult, MYSQLI_NUM))
 	{
 	  ?>
 	<tr>
@@ -925,15 +928,15 @@ else
       {
         echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=7'>New Ability</a></li>\n";
       }
-      while ($abilityArray=mysql_fetch_array($abilityTypeResult, MYSQL_ASSOC))
+      while ($abilityArray=mysqli_fetch_array($abilityTypeResult, MYSQLI_ASSOC))
       {
-        if($_GET['sub']==$abilityArray[id])
+        if($_GET['sub']==$abilityArray['id'])
         {
-          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=7&amp;sub={$abilityArray[id]}'>{$abilityArray[name]}</a></li>\n";
+          echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=7&amp;sub={$abilityArray['id']}'>{$abilityArray['name']}</a></li>\n";
         }
         else
         {
-          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=7&amp;sub={$abilityArray[id]}'>{$abilityArray[name]}</a></li>\n";
+          echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=7&amp;sub={$abilityArray['id']}'>{$abilityArray['name']}</a></li>\n";
         }
       }
       echo "</ul>\n";
@@ -943,7 +946,7 @@ else
       {
         $sub=strip($_GET['sub']);
         $abilityTypesResult=$dbf->queryselect("SELECT * FROM abilitytypes WHERE ID='{$sub}';");
-        $abilityTypesArray=mysql_fetch_array($abilityTypesResult, MYSQL_ASSOC);
+        $abilityTypesArray=mysqli_fetch_array($abilityTypesResult, MYSQLI_ASSOC);
 
         echo"<div id='typeeditarea' class='typeeditarea'>\n";
 
@@ -958,14 +961,14 @@ else
         echo"<table border='0'>\n";
         echo"<tr>\n";
         echo"<th class='toelong'>Name</th>\n";
-        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$abilityTypesArray[name]}' /></td>\n";
+        echo"<td><input class='toelong' name='name' type='text' maxlength='60' value='{$abilityTypesArray['name']}' /></td>\n";
         echo"</tr>\n";
         echo"<tr>\n";
-        echo "<td colspan='2'><input type='hidden' name='ID' value='{$abilityTypesArray[id]}' />\n";
+        echo "<td colspan='2'><input type='hidden' name='ID' value='{$abilityTypesArray['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='AbilityType' />\n";
         echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
         //Delete not used ability types
-        if (is_null($usedAbilityTypeArray) || !in_array($abilityTypesArray[id], $usedAbilityTypeArray))
+        if (is_null($usedAbilityTypeArray) || !in_array($abilityTypesArray['id'], $usedAbilityTypeArray))
         {
           echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }
@@ -1013,13 +1016,13 @@ default:
 
   $requirementResult=$dbf->queryselect("SELECT id, type FROM crewtypes WHERE equipment='1' ORDER BY prefpos ASC;");
 
-  $requirementsArray;
-  $requirementsArrayID;
+  $requirementsArray = array();
+  $requirementsArrayID = array();
   $counter=0;
-  while ($recArray = mysql_fetch_array($requirementResult, MYSQL_ASSOC))
+  while ($recArray = mysqli_fetch_array($requirementResult, MYSQLI_ASSOC))
   {
-    $requirementsArrayID[$counter]=$recArray[id];
-    $requirementsArray[$counter]=$recArray[type];
+    $requirementsArrayID[$counter]=$recArray['id'];
+    $requirementsArray[$counter]=$recArray['type'];
     $counter++;
   }
 
@@ -1037,15 +1040,15 @@ default:
   {
     echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=1'>New Equipment Type</a></li>\n";
   }
-  while ($equipmentArray=mysql_fetch_array($equipmentResult, MYSQL_ASSOC))
+  while ($equipmentArray=mysqli_fetch_array($equipmentResult, MYSQLI_ASSOC))
   {
-    if($_GET['sub']==$equipmentArray[id])
+    if($_GET['sub']==$equipmentArray['id'])
     {
-      echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=1&amp;sub={$equipmentArray[id]}'>{$equipmentArray[name]}</a></li>\n";
+      echo "<li class='selectedtype'><a class='selectedtype' href='index.php?action=toe&amp;page=1&amp;sub={$equipmentArray['id']}'>{$equipmentArray['name']}</a></li>\n";
     }
     else
     {
-      echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=1&amp;sub={$equipmentArray[id]}'>{$equipmentArray[name]}</a></li>\n";
+      echo "<li><a class='notselectedtype' href='index.php?action=toe&amp;page=1&amp;sub={$equipmentArray['id']}'>{$equipmentArray['name']}</a></li>\n";
     }
   }
   echo "</ul>\n";
@@ -1060,7 +1063,7 @@ default:
   {
     $sub=strip($_GET['sub']);
     $equipmentTypeResult=$dbf->queryselect("SELECT * FROM equipmenttypes WHERE id='{$sub}';");
-    $equipmentTypeArray=mysql_fetch_array($equipmentTypeResult, MYSQL_ASSOC);
+    $equipmentTypeArray=mysqli_fetch_array($equipmentTypeResult, MYSQLI_ASSOC);
 
     echo "<div id='typeeditarea' class='typeeditarea'>\n";
     echo "<form action='index.php?action=setupquery' method='post'>\n";
@@ -1068,34 +1071,34 @@ default:
     //Type
     echo "<tr>\n";
     echo "<th class='toelong'>Type</th>\n";
-    echo "<td><input class='toelong' name='name' type='text' maxlength='60' value='{$equipmentTypeArray[name]}' /></td>\n";
+    echo "<td><input class='toelong' name='name' type='text' maxlength='60' value='{$equipmentTypeArray['name']}' /></td>\n";
     echo "</tr>\n";
     //ID Number
     echo "<tr>\n";
     echo "<th class='toeshort'>ID Number</th>\n";
-    echo "<td><input class='toeshort' name='license' type='text' maxlength='60' value='{$equipmentTypeArray[license]}'/></td>\n";
+    echo "<td><input class='toeshort' name='license' type='text' maxlength='60' value='{$equipmentTypeArray['license']}'/></td>\n";
     echo "</tr>\n";
     //Max Weight
     echo "<tr>\n";
     echo "<th class='toeshort'>Max Weight</th>\n";
-    echo "<td><input class='toeshort' name='maxweight' type='text' maxlength='3' value='{$equipmentTypeArray[maxweight]}' /></td>\n";
+    echo "<td><input class='toeshort' name='maxweight' type='text' maxlength='3' value='{$equipmentTypeArray['maxweight']}' /></td>\n";
     echo"</tr>\n";
     //Min Weight
     echo "<tr>\n";
     echo "<th class='toeshort'>Min Weight</th>\n";
-    echo "<td><input class='toeshort' name='minweight' type='text' maxlength='3' value='{$equipmentTypeArray[minweight]}' /></td>\n";
+    echo "<td><input class='toeshort' name='minweight' type='text' maxlength='3' value='{$equipmentTypeArray['minweight']}' /></td>\n";
     echo"</tr>\n";
     //Weight Step
     echo "<tr>\n";
     echo "<th class='toeshort'>Weight Step</th>\n";
-    echo "<td><input class='toeshort' name='weightstep' type='text' maxlength='3' value='{$equipmentTypeArray[weightstep]}' /></td>\n";
+    echo "<td><input class='toeshort' name='weightstep' type='text' maxlength='3' value='{$equipmentTypeArray['weightstep']}' /></td>\n";
     echo "</tr>\n";
     //Weight Scale
     echo "<tr>\n";
     echo "<th class='toeshort'>Weight Scale</th>\n";
     echo "<td><select class='edt_left_short' name='weightscale'>\n";
 
-    if ($equipmentTypeArray[weightscale]=="ton")
+    if ($equipmentTypeArray['weightscale']=="ton")
     {
       echo "<option value='ton' selected='selected'>ton</option>\n";
       echo "<option value='Mton'>Mton</option>\n";
@@ -1103,7 +1106,7 @@ default:
     }
     else
     {
-      if ($equipmentTypeArray[weightscale]=="Mton")
+      if ($equipmentTypeArray['weightscale']=="Mton")
       {
         echo "<option value='ton'>ton</option>\n";
         echo "<option value='Mton' selected='selected'>Mton</option>\n";
@@ -1126,7 +1129,7 @@ default:
     echo "<option value='0' selected='selected'>No Requirements</option>\n";
     for ($counter=0; $counter<sizeof($requirementsArray); $counter++)
     {
-      if ($requirementsArrayID[$counter]==$equipmentTypeArray[requirement])
+      if ($requirementsArrayID[$counter]==$equipmentTypeArray['requirement'])
       {
         echo "<option value='$requirementsArrayID[$counter]' selected='selected'>{$requirementsArray[$counter]}</option>\n";
       }
@@ -1141,7 +1144,7 @@ default:
     //Used
     echo "<tr>\n";
     echo "<th class='toeshort'>Used</th>\n";
-    if ($equipmentTypeArray[used])
+    if ($equipmentTypeArray['used'])
     {
       echo "<td><input class='toeshort' name='usedequipment' type='checkbox' checked='checked' /></td>\n";
     }
@@ -1151,12 +1154,12 @@ default:
     }
     echo "</tr>\n";
     echo "<tr>\n";
-    echo "<td><input type='hidden' name='ID' value='{$equipmentTypeArray[id]}' />\n";
+    echo "<td><input type='hidden' name='ID' value='{$equipmentTypeArray['id']}' />\n";
     echo "<input type='hidden' name='QueryType' value='EquipmentType' />\n";
-    echo "<input type='hidden' name='prefpos' value='{$equipmentTypeArray[prefpos]}' />\n";
+    echo "<input type='hidden' name='prefpos' value='{$equipmentTypeArray['prefpos']}' />\n";
     echo "<input class='toebutton' name='QueryAction' type='submit' value='Change' />\n";
 
-    if (!in_array($equipmentTypeArray[id], $usedEquipmentTypeArray))
+    if (!in_array($equipmentTypeArray['id'], $usedEquipmentTypeArray))
     {
       echo "<input class='toebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
     }
@@ -1175,11 +1178,11 @@ default:
     echo "<form action='index.php?action=setupquery' method='post'>\n";
     echo "<table border='0'>\n";
     echo "<tr>\n";
-    echo "<td><input type='hidden' name='ID' value='{$equipmentTypeArray[id]}' />\n";
-    echo "<input type='hidden' name='prefpos' value='{$equipmentTypeArray[prefpos]}' />\n";
+    echo "<td><input type='hidden' name='ID' value='{$equipmentTypeArray['id']}' />\n";
+    echo "<input type='hidden' name='prefpos' value='{$equipmentTypeArray['prefpos']}' />\n";
     echo "<input type='hidden' name='QueryType' value='equipmenttypemove' />\n";
     //Up button
-    if ($equipmentTypeArray[prefpos]!=1)
+    if ($equipmentTypeArray['prefpos']!=1)
     {
       echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' />\n";
     }
@@ -1187,7 +1190,7 @@ default:
     {
       echo "<input class='toebutton' name='QueryAction' type='submit' value='Up' disabled='disabled' />\n";
     }
-    if ($equipmentTypeArray[prefpos]!=$equipmenttypes)
+    if ($equipmentTypeArray['prefpos']!=$equipmenttypes)
     {
       echo "<input class='toebutton' name='QueryAction' type='submit' value='Down' />\n";
     }

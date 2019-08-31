@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Gki58Bdg63v'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,9 +9,9 @@ if(!defined('Gki58Bdg63v'))
 require("htdocs/appsetup.php");
 
 require("htdocs/dbsetup.php");
-$action=$_GET["action"];
+if (isset($_GET['action'])) { $action=$_GET["action"]; } else { $action = ""; }
 $action=stripslashes($action);
-$action=mysql_real_escape_string($action);
+$action=html_escape($action);
 $scriptArray=array();
 
 define('Ghe36Jacb3b', TRUE);
@@ -399,11 +400,11 @@ switch ($action)
   case "checklogin":
     require("htdocs/dbsetup.php");
     $myusername=stripslashes($_POST['myusername']);
-    $myusername=mysql_real_escape_string($myusername);
+    $myusername=html_escape($myusername);
     $mypassword=stripslashes($_POST['mypassword']);
-    $mypassword=mysql_real_escape_string($mypassword);
+    $mypassword=html_escape($mypassword);
     $remember=stripslashes($_POST['remember']);
-    $remember=mysql_real_escape_string($remember);
+    $remember=html_escape($remember);
     $userfuntions=new UserFunctions();
     $login=$userfuntions->logincheck($myusername, $mypassword, $remember, $ip, $dbf);
     if($login==1)

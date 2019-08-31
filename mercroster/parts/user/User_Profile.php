@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('ty7Ui54F5'))
 {
   header('HTTP/1.0 404 not found');
@@ -11,7 +12,7 @@ $inputFields=new InputFields;
 
 require("htdocs/dbsetup.php");
 $data=stripslashes($_SESSION['SESS_ID']);
-$data=mysql_real_escape_string($data);
+$data=html_escape($data);
 $data=strip_tags($data);
 
 $tarray[1]="Administrator";
@@ -54,7 +55,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_ID']!="" && $_SESSION['SESS_ID
 
   //$userResult = $dbf->queryselect("SELECT id, username, sitename, fname, lname, type, timeoffset, timeformat FROM members WHERE username='{$userName}';");
   $userResult=$dbf->queryselect("SELECT id, username, sitename, fname, lname, type, timeoffset, timeformat, favoredunit FROM members WHERE id='{$data}';");
-  $userArray=mysql_fetch_array($userResult, MYSQL_BOTH);
+  $userArray=mysqli_fetch_array($userResult, MYSQLI_BOTH);
 
   $unitResult=$dbf->queryselect("SELECT DISTINCT u.id AS uid, u.name AS uname, p.id AS pid, p.name AS pname FROM crew c, unit u, unit p WHERE c.parent=u.id AND p.id=u.parent ORDER BY p.name ASC, u.name ASC;");
 
@@ -149,7 +150,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_ID']!="" && $_SESSION['SESS_ID
   echo "<tr>\n";
   echo "<td class='edittableleft'>Favored Unit:</td>\n";
   echo "<td>\n";
-  $inputFields->dropboxquerydual($unitResult,$userArray[favoredunit],'favoredunit','edittablebox',true);
+  $inputFields->dropboxquerydual($unitResult,$userArray['favoredunit'],'favoredunit','edittablebox',true);
   echo "</td>\n";
   echo "</tr>\n";
 

@@ -26,7 +26,7 @@ class Personnelparser extends Parser
                 $vehicleqeury  = "SELECT id FROM equipment WHERE crew='$id';";
                 $result = $dbf->queryselect($vehicleqeury);
                 //if so change that equipment's owner to 0
-                while($array = mysql_fetch_array($result, MYSQL_NUM))
+                while($array = mysqli_fetch_array($result, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)] = "UPDATE equipment SET crew='0' WHERE id='{$array[0]}';";
                 }

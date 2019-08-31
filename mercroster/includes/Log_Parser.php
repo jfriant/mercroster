@@ -20,7 +20,7 @@ class Logparser extends Parser
   private function getUserName($user, $dbf)
   {
     $nameArray=$dbf->queryselect("SELECT sitename FROM members WHERE username='{$user}';");
-    $name=mysql_fetch_array($nameArray, MYSQL_NUM);
+    $name=mysqli_fetch_array($nameArray, MYSQLI_NUM);
     return $name[0];
   }
 
@@ -33,7 +33,7 @@ class Logparser extends Parser
   private function getNewPostCount($user, $dbf)
   {
     $nameArray=$dbf->queryselect("SELECT postcount FROM members WHERE username='{$user}';");
-    $postCountResult=mysql_fetch_array($nameArray, MYSQL_NUM);
+    $postCountResult=mysqli_fetch_array($nameArray, MYSQLI_NUM);
     $postCount=$postCountResult[0]+1;
     $queryArray="UPDATE members SET postcount='{$postCount}' WHERE username='{$user}';";
     return $queryArray;
@@ -172,7 +172,7 @@ class Logparser extends Parser
               //parse queries
               $queryArray[sizeof($queryArray)]="DELETE FROM logentry WHERE ID='{$id}';";
               $deletedcommentsresult=$dbf->queryselect("SELECT ID FROM comments WHERE parent='$id';");
-              //while($array=mysql_fetch_array($deletedcommentsresult, MYSQL_NUM))
+              //while($array=mysqli_fetch_array($deletedcommentsresult, MYSQLI_NUM))
               //{
                 $queryArray[sizeof($queryArray)]="DELETE FROM comments WHERE parent='{$id}';";
               //}
@@ -226,7 +226,7 @@ class Logparser extends Parser
               }
 
               $logTypeResult=$dbf->queryselect("SELECT * FROM logtypes WHERE id='{$logtype}';");
-              $logTypeArray=mysql_fetch_array($logTypeResult, MYSQL_NUM);
+              $logTypeArray=mysqli_fetch_array($logTypeResult, MYSQLI_NUM);
               if($place=="" && $logTypeArray[4]==1)
               {
                 $errMSG="no location";
@@ -289,7 +289,7 @@ class Logparser extends Parser
                 $end="NULL";
               }
               $logTypeResult=$dbf->queryselect("SELECT * FROM logtypes WHERE id='{$logtype}';");
-              $logTypeArray=mysql_fetch_array($logTypeResult, MYSQL_NUM);
+              $logTypeArray=mysqli_fetch_array($logTypeResult, MYSQLI_NUM);
 
               //Chaeck for errors
               $errMSG="";

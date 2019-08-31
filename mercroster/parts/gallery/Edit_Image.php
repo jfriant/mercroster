@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Fr5v30m3F5'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,11 +9,11 @@ if(!defined('Fr5v30m3F5'))
 require("htdocs/dbsetup.php");
 $galleryID=$_GET['gallery'];
 $galleryID=stripslashes($galleryID);
-$galleryID=mysql_real_escape_string($galleryID);
+$galleryID=html_escape($galleryID);
 
 $imageID=$_GET['image'];
 $imageID=stripslashes($imageID);
-$imageID=mysql_real_escape_string($imageID);
+$imageID=html_escape($imageID);
 
 require("includes/InputFields.php");
 $inputFields=new InputFields;
@@ -24,10 +25,10 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
     $galleryresult=$dbf->queryselect("SELECT g.id, g.user, g.type, g.name, m.sitename, m.id AS userid FROM gallery g LEFT JOIN members m ON g.user=m.username WHERE g.id='{$galleryID}';");
     $imageresult=$dbf->queryselect("SELECT id, name, filename, gallery, comment FROM images WHERE id='{$imageID}';");
 
-    if(mysql_num_rows($galleryresult)==1 && mysql_num_rows($imageresult)==1)
+    if(mysqli_num_rows($galleryresult)==1 && mysqli_num_rows($imageresult)==1)
     {
-      $galleryarray=mysql_fetch_array($galleryresult, MYSQL_ASSOC);
-      $imagearray=mysql_fetch_array($imageresult, MYSQL_ASSOC);
+      $galleryarray=mysqli_fetch_array($galleryresult, MYSQLI_ASSOC);
+      $imagearray=mysqli_fetch_array($imageresult, MYSQLI_ASSOC);
       $topicText="Edit {$galleryarray['name']}'s / {$imagearray['name']} information";
       $submitButtonText='Save';
 
@@ -47,9 +48,9 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
   {
     $galleryresult=$dbf->queryselect("SELECT g.id, g.user, g.type, g.name, m.sitename, m.id AS userid FROM gallery g LEFT JOIN members m ON g.user=m.username WHERE g.id='{$galleryID}';");
 
-    if(mysql_num_rows($galleryresult)==1)
+    if(mysqli_num_rows($galleryresult)==1)
     {
-      $galleryarray=mysql_fetch_array($galleryresult, MYSQL_ASSOC);
+      $galleryarray=mysqli_fetch_array($galleryresult, MYSQLI_ASSOC);
       $topicText="Add Image to {$galleryarray['name']}";
       $submitButtonText='Add';
 

@@ -46,7 +46,7 @@ if(!isset($_SESSION['SESS_ID']) || (trim($_SESSION['SESS_ID']) == ''))
 
   echo "<tr>\n";
   echo "<td>Username:</td>\n";
-  echo "<td><input name='myusername' type='text' id='myusername' /></td>\n";
+  echo "<td><input name='myusername' type='text' id='myusername' autofocus /></td>\n";
   echo "</tr>\n";
   echo "<tr>\n";
   echo "<td>Password:</td>\n";

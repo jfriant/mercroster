@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('gHsb64G7jjT'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,7 +9,7 @@ if(!defined('gHsb64G7jjT'))
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 
 /**
  * Funtion used to check whaetever first date is earlier than last
@@ -52,7 +53,7 @@ if($rnumber>0)
   $pb->generatebarx($rnumber, $first, $range, $link, $permission, $add, $addtype);
   echo "<hr />\n";
   $index = $rnumber-$first;
-  while($contractsArray = mysql_fetch_array($contractsRetVal, MYSQL_NUM))
+  while($contractsArray = mysqli_fetch_array($contractsRetVal, MYSQLI_NUM))
   {
     if(checkdates($contractsArray[1], $currentGameDateArray[2])==1)
     {

@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Mbs35cED2daj'))
 {
   header('HTTP/1.0 404 not found');
@@ -9,7 +10,7 @@ if(!defined('Mbs35cED2daj'))
 require("htdocs/dbsetup.php");
 $crewID=$_GET['personnel'];
 $crewID=stripslashes($crewID);
-$crewID=mysql_real_escape_string($crewID);
+$crewID=html_escape($crewID);
 
 require("includes/GlobalFunctions.php");
 $gblf = new GlobalFunctions;
@@ -25,18 +26,18 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
   if(isset($_GET['personnel']))
   {
     $result=$dbf->queryselect("SELECT id, rank, lname, fname, callsign, crewnumber, joiningdate, notes, bday, status, parent, notable, image FROM crew WHERE id='$crewID';");
-    if(mysql_num_rows($result)==1)
+    if(mysqli_num_rows($result)==1)
     {
-      $array=mysql_fetch_array($result, MYSQL_ASSOC);
+      $array=mysqli_fetch_array($result, MYSQLI_ASSOC);
       $personnelType=$array[1];
       $submitButtonText='Save';
 
-      $usedSkills=$dbf->resulttoarray($dbf->queryselect("SELECT s.id, st.name, s.value, s.skill, st.id AS skillid FROM skills s, skilltypes st WHERE s.person='{$array[id]}' AND s.skill=st.id;"));
+      $usedSkills=$dbf->resulttoarray($dbf->queryselect("SELECT s.id, st.name, s.value, s.skill, st.id AS skillid FROM skills s, skilltypes st WHERE s.person='{$array['id']}' AND s.skill=st.id;"));
       $freeSkillArray=$dbf->resulttoarray($dbf->queryselect("SELECT id, name FROM skilltypes ORDER BY name ASC;"));
-      $usedAbilities=$dbf->resulttoarray($dbf->queryselect("SELECT a.id, t.name, a.notes, a.ability, t.id AS abilityid FROM abilities a, abilitytypes t WHERE a.person='{$array[id]}' AND a.ability=t.id;"));
+      $usedAbilities=$dbf->resulttoarray($dbf->queryselect("SELECT a.id, t.name, a.notes, a.ability, t.id AS abilityid FROM abilities a, abilitytypes t WHERE a.person='{$array['id']}' AND a.ability=t.id;"));
       $freeAbilitiesArray=$dbf->resulttoarray($dbf->queryselect("SELECT id, name FROM abilitytypes ORDER BY name ASC;"));
-      $positionsArray=$dbf->resulttoarray($dbf->queryselect("SELECT pp.id, pp.personneltype, pp.person, ct.type FROM personnelpositions pp, crewtypes ct WHERE pp.personneltype=ct.id AND person='{$array[id]}' ORDER BY ct.prefpos ASC;"));
-      $usedPositionsIDArray=$dbf->resulttoarraysingle($dbf->queryselect("SELECT ct.id FROM personnelpositions pp, crewtypes ct WHERE pp.personneltype=ct.id AND person='{$array[id]}' ORDER BY ct.prefpos ASC;"));
+      $positionsArray=$dbf->resulttoarray($dbf->queryselect("SELECT pp.id, pp.personneltype, pp.person, ct.type FROM personnelpositions pp, crewtypes ct WHERE pp.personneltype=ct.id AND person='{$array['id']}' ORDER BY ct.prefpos ASC;"));
+      $usedPositionsIDArray=$dbf->resulttoarraysingle($dbf->queryselect("SELECT ct.id FROM personnelpositions pp, crewtypes ct WHERE pp.personneltype=ct.id AND person='{$array['id']}' ORDER BY ct.prefpos ASC;"));
       $ctids="";
       $councts=0;
       foreach ($usedPositionsIDArray as $variable)
@@ -66,22 +67,22 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
       $reqq=array();
       for($i=0; $i<sizeof($reqArray); $i++)
       {
-        if(in_array($reqArray[$i][id], $reqid))
+        if(in_array($reqArray[$i]['id'], $reqid))
         {
-          array_push($reqq[array_search($reqArray[$i][id], $reqid)], $reqArray[$i][skilltype]);
+          array_push($reqq[array_search($reqArray[$i]['id'], $reqid)], $reqArray[$i]['skilltype']);
         }
         else
         {
-          $reqq[sizeof($reqid)][0]=$reqArray[$i][id];
-          $reqq[sizeof($reqid)][1]=$reqArray[$i][type];
-          $reqq[sizeof($reqid)][2]=$reqArray[$i][skilltype];
-          $reqid[sizeof($reqid)]=$reqArray[$i][id];
+          $reqq[sizeof($reqid)][0]=$reqArray[$i]['id'];
+          $reqq[sizeof($reqid)][1]=$reqArray[$i]['type'];
+          $reqq[sizeof($reqid)][2]=$reqArray[$i]['skilltype'];
+          $reqid[sizeof($reqid)]=$reqArray[$i]['id'];
         }
       }
       $usedSkillsArray=array();
       for($i=0; $i<sizeof($usedSkills); $i++)
       {
-        $usedSkillsArray[sizeof($usedSkillsArray)]=$usedSkills[$i][skillid];
+        $usedSkillsArray[sizeof($usedSkillsArray)]=$usedSkills[$i]['skillid'];
       }
       $positionid=array();
       $positiontype=array();
@@ -122,7 +123,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     require("htdocs/dbsetup.php");
     $personnelType=$_GET["type"];
     $personnelType=stripslashes($personnelType);
-    $personnelType=mysql_real_escape_string($personnelType);
+    $personnelType=html_escape($personnelType);
     $crewID = 0;
     $submitButtonText='Add';
   }
@@ -131,7 +132,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
   {
     //Fetching used dates data
     $datesResult=$dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-    $datesArray=mysql_fetch_array($datesResult, MYSQL_NUM);
+    $datesArray=mysqli_fetch_array($datesResult, MYSQLI_NUM);
     $date=$datesArray[1];
     $startingYear=strtok($date, "-");
     $date=$datesArray[3];
@@ -175,28 +176,28 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     echo "<tr>\n";
     echo "<td class='edittableleft'>Rank:</td>\n";
     echo "<td class='edittableright' colspan='6'>\n";
-    $inputFields->dropboxqu($rankResult, $array[rank], "rank", "edittablebox", false);
+    $inputFields->dropboxqu($rankResult, $array['rank'], "rank", "edittablebox", false);
     echo "</td>\n";
     echo "</tr>\n";
     //Last Name
     echo "<tr>\n";
     echo "<td class='edittableleft'>Last name:</td>\n";
     echo "<td class='edittableright' colspan='6'>";
-    $inputFields->textinput("edittablecommon265","lname",45,$array[lname]);
+    $inputFields->textinput("edittablecommon265","lname",45,$array['lname']);
     echo "</td>\n";
     echo "</tr>\n";
     //First Name
     echo "<tr>\n";
     echo "<td class='edittableleft'>First name:</td>\n";
     echo "<td class='edittableright' colspan='6'>";
-    $inputFields->textinput("edittablecommon265","fname",45,$array[fname]);
+    $inputFields->textinput("edittablecommon265","fname",45,$array['fname']);
     echo "</td>\n";
     echo "</tr>\n";
     //Call Sign
     echo "<tr>\n";
     echo "<td class='edittableleft'>Callsign:</td>\n";
     echo "<td class='edittableright' colspan='6'>";
-    $inputFields->textinput("edittablecommon265","callsign",45,$array[callsign]);
+    $inputFields->textinput("edittablecommon265","callsign",45,$array['callsign']);
     echo "</td>\n";
     echo "</tr>\n";
     //Birth Day
@@ -204,11 +205,11 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     echo "<td class='edittableleft'>Birthday:</td>\n";
     $minYear=2950;
     $maxYear=3050;
-    $inputFields->datebar($array[bday], $maxYear, $minYear, "birthyear", "birthmonth", "birthday", false);
+    $inputFields->datebar($array['bday'], $maxYear, $minYear, "birthyear", "birthmonth", "birthday", false);
     echo "</tr>\n";
     //Status
-    $status=$array[status];
-    if ($array[status]==0)
+    $status=$array['status'];
+    if ($array['status']==0)
     {
       $statusArray[0]="Active";
       $statusArray[1]="Hospitalized";
@@ -229,13 +230,13 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     echo "<td class='edittableright' colspan='6'>\n";
     echo "<select class='edittablebox' name='vehicleid'>\n";
     echo "<option value='0'>No Equipment</option>\n";
-    while($vehicleArray=mysql_fetch_array($vehicleResult, MYSQL_NUM))
+    while($vehicleArray=mysqli_fetch_array($vehicleResult, MYSQLI_NUM))
     {
       $ename = $gblf->displayEquipmentName($vehicleArray[2], $vehicleArray[1], $dbf);
       echo "<option value='{$vehicleArray[0]}' selected='selected'>{$ename}</option>\n";
       $lastVehicleID=$vehicleArray[0];
     }
-    while($availableVehicleArray = mysql_fetch_array($availableVehicleResult, MYSQL_NUM))
+    while($availableVehicleArray = mysqli_fetch_array($availableVehicleResult, MYSQLI_NUM))
     {
       if(in_array($availableVehicleArray[4], $usedPositionsIDArray))
       {
@@ -254,7 +255,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     echo "<select class='edittablebox' name='crewnumber'>\n";
     for($i=1;$i<11;$i++)
     {
-      if($i==$array[crewnumber])
+      if($i==$array['crewnumber'])
       {
         echo "<option value='{$i}' selected='selected'>$i</option>\n";
       }
@@ -270,7 +271,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     //Joining Date
     if(isset($_GET['personnel']))
     {
-      $date=$array[joiningdate];
+      $date=$array['joiningdate'];
     }
     else
     {
@@ -283,7 +284,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     //Notable checkbox
     echo "<tr>\n";
     echo "<td class='edittableleft'>Notable:</td>\n";
-    if ($array[notable])
+    if ($array['notable'])
     {
       echo "<td colspan='6'><input name='notable' type='checkbox' checked='checked' /></td>\n";
     }
@@ -297,16 +298,16 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
     echo "<tr>\n";
     echo "<td class='edittableleft'>Image:</td>\n";
     echo "<td colspan='6'>\n";
-    $inputFields->dropboxarscript($personnelimages, $array[image], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"personnelimages\")'", true);
+    $inputFields->dropboxarscript($personnelimages, $array['image'], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"personnelimages\")'", true);
     echo "</td>\n";
     echo "<td><img id='personnelimages' class='unittypeimage' src='./images/personnelimages/{$checkArray[14]}' alt='{$checkArray[14]}' /></td>\n";
     echo "</tr>\n";
     //Notes
-    $inputFields->textarea("edittableleft", "edittableright", 6, "Notes", "edittablecommon", "notes", $array[notes]);
+    $inputFields->textarea("edittableleft", "edittableright", 6, "Notes", "edittablecommon", "notes", $array['notes']);
     echo "<tr><td colspan='7'><hr /></td></tr>\n";
     echo "<tr>\n";
     echo "<td colspan='7' class='edittablebottom'>\n";
-    if ($array[status]!=0)
+    if ($array['status']!=0)
     {
       echo "<input type='hidden' name='status' value='{$status}' />\n";
     }
@@ -346,10 +347,10 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
         echo "</td>\n";
         echo "<td>\n";
         echo "<input type='hidden' name='ID' value='{$skillArray[0]}' />\n";
-        echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+        echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='Skill' />\n";
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Change' />\n";
-        if(!in_array($skillArray[skillid], $usedSkillsIDArray))
+        if(!in_array($skillArray['skillid'], $usedSkillsIDArray))
         {
           echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Remove' onclick='return confirmSubmit(\"Remove\")' />\n";
         }
@@ -395,7 +396,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
       echo "</td>\n";
       echo "<td>\n";
       echo "<input type='hidden' name='QueryType' value='Skill' />\n";
-      echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+      echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
       if($counter==0)
       {
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Add' disabled='disabled'/>\n";
@@ -429,7 +430,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
         echo "</td>\n";
         echo "<td>\n";
         echo "<input type='hidden' name='ID' value='{$abilityArray[0]}' />\n";
-        echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+        echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='Ability' />\n";
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Change' />\n";
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Remove' onclick='return confirmSubmit(\"Remove\")' />\n";
@@ -475,7 +476,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
       echo "</td>\n";
       echo "<td>\n";
       echo "<input type='hidden' name='QueryType' value='Ability' />\n";
-      echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+      echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
       if($counter==0)
       {
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Add' disabled='disabled'/>\n";
@@ -498,10 +499,10 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
         echo "<form action='index.php?action=personnelquery' method='post'>\n";
         echo "<table border='0'>\n";
         echo "<tr>\n";
-        echo "<td class='edittableleft'>{$positionsArray[$i][type]}</td>\n";
+        echo "<td class='edittableleft'>{$positionsArray[$i]['type']}</td>\n";
         echo "<td>\n";
-        echo "<input type='hidden' name='ID' value='{$positionsArray[$i][id]}' />\n";
-        echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+        echo "<input type='hidden' name='ID' value='{$positionsArray[$i]['id']}' />\n";
+        echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
         echo "<input type='hidden' name='QueryType' value='Personnelposition' />\n";
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Remove' onclick='return confirmSubmit(\"Remove\")' />\n";
         echo "</td>\n";
@@ -531,7 +532,7 @@ if(isset($_SESSION['SESS_NAME']) && $_SESSION['SESS_TYPE']<'5')
       echo "</td>\n";
       echo "<td>\n";
       echo "<input type='hidden' name='QueryType' value='Personnelposition' />\n";
-      echo "<input type='hidden' name='personnel' value='{$array[id]}' />\n";
+      echo "<input type='hidden' name='personnel' value='{$array['id']}' />\n";
       if($counter==0)
       {
         echo "<input class='edittablebutton' name='QueryAction' type='submit' value='Add' disabled='disabled'/>\n";

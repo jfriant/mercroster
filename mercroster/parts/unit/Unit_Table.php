@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('j6Fr4F7k0cs8'))
 {
   header('HTTP/1.0 404 not found');
@@ -7,7 +8,7 @@ if(!defined('j6Fr4F7k0cs8'))
 require("htdocs/dbsetup.php");
 $parent=$_GET["unit"];
 $parent = stripslashes($parent);
-$parent = mysql_real_escape_string($parent);
+$parent = html_escape($parent);
 
 require("includes/GlobalFunctions.php");
 $gblf = new GlobalFunctions;
@@ -366,28 +367,28 @@ function parseunittables($recursionArray, $unitArray, $crewsArray, $upperid, $db
     for($i=0; $i<sizeof($crews); $i++)
     {
       $crew=$crews[$i];
-      if(is_numeric($crew[Piloting]) && is_numeric($crew[Gunnery]))
+      if(is_numeric($crew['Piloting']) && is_numeric($crew['Gunnery']))
       {
-        $rating=calculateRank($crew[Gunnery], $crew[Piloting]);
+        $rating=calculateRank($crew['Gunnery'], $crew['Piloting']);
       }
-      if(!is_numeric($crew[Piloting]) && is_numeric($crew[Gunnery]))
+      if(!is_numeric($crew['Piloting']) && is_numeric($crew['Gunnery']))
       {
-        $rating=calculateInfantryRank($crew[Gunnery]);
+        $rating=calculateInfantryRank($crew['Gunnery']);
       }
-      if(is_numeric($crew[Piloting]) && !is_numeric($crew[Gunnery]))
+      if(is_numeric($crew['Piloting']) && !is_numeric($crew['Gunnery']))
       {
-        $rating=calculateInfantryRank($crew[Piloting]);
+        $rating=calculateInfantryRank($crew['Piloting']);
       }
      
-      $ename = $gblf->displayEquipmentName($crew[subtype], $crew[vname], $dbf);
+      $ename = $gblf->displayEquipmentName($crew['subtype'], $crew['vname'], $dbf);
       
       echo "<tr>\n";     
       echo "<td class='experiancetd'>{$rating}</td>\n";
-      echo "<td class='calltd'>{$crew[callsign]}</td>\n";
-      echo "<td class='ranktd'>{$crew[rankname]}</td>\n";
-      echo "<td class='nametd'><a class='personnellink' href='index.php?action=personnel&amp;personnel={$crew[pid]}'>{$crew[fname]} {$crew[lname]}</a></td>\n";    
-      echo "<td class='ranktd'>{$crew[Gunnery]} / {$crew[Piloting]}</td>\n";
-      echo "<td class='vehicletd'><a class='personnellink' href='index.php?action=equipment&amp;equipment={$crew[uid]}'>{$ename}</a></td>\n";
+      echo "<td class='calltd'>{$crew['callsign']}</td>\n";
+      echo "<td class='ranktd'>{$crew['rankname']}</td>\n";
+      echo "<td class='nametd'><a class='personnellink' href='index.php?action=personnel&amp;personnel={$crew['pid']}'>{$crew['fname']} {$crew['lname']}</a></td>\n";
+      echo "<td class='ranktd'>{$crew['Gunnery']} / {$crew['Piloting']}</td>\n";
+      echo "<td class='vehicletd'><a class='personnellink' href='index.php?action=equipment&amp;equipment={$crew['uid']}'>{$ename}</a></td>\n";
 
       echo "</tr>\n";
     }
@@ -517,10 +518,10 @@ $crewsArray=$dbf->resulttoarray($crewResult);
 for ($i=0; $i<sizeof($crewsArray); $i++)
 {
   $tempAr=$crewsArray[$i];
-  $tempResult=$dbf->queryselect("SELECT s.value, st.shortname, st.name, pt.type FROM skills s LEFT JOIN skilltypes st ON s.skill=st.id LEFT JOIN skillrequirements sr ON st.id=sr.skilltype LEFT JOIN crewtypes pt ON pt.id=sr.personneltype WHERE s.person='{$tempAr[pid]}' AND pt.id='{$tempAr[requirement]}' GROUP BY st.name;");
-  while($tempArray=mysql_fetch_array($tempResult, MYSQL_ASSOC))
+  $tempResult=$dbf->queryselect("SELECT s.value, st.shortname, st.name, pt.type FROM skills s LEFT JOIN skilltypes st ON s.skill=st.id LEFT JOIN skillrequirements sr ON st.id=sr.skilltype LEFT JOIN crewtypes pt ON pt.id=sr.personneltype WHERE s.person='{$tempAr['pid']}' AND pt.id='{$tempAr['requirement']}' GROUP BY st.name;");
+  while($tempArray=mysqli_fetch_array($tempResult, MYSQLI_ASSOC))
   {
-    $skillArray=array("{$tempArray[shortname]}" => $tempArray[value]);
+    $skillArray=array("{$tempArray['shortname']}" => $tempArray['value']);
     $tempAr=array_merge($tempAr, $skillArray);
   }
   $crewsArray[$i]=$tempAr;
@@ -536,8 +537,8 @@ while($counter<sizeof($organizationArray))
 }
 $recArray = generateorganizationlist($parent, $organizationAy);
 
-$a;
-$upper;
+$a = array();
+$upper = array();
 if($parent==0)
 {
   $title="Units Deteched from Table of Organization";

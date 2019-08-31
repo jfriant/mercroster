@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('hyk74Gd434'))
 {
   header('HTTP/1.0 404 not found');
@@ -12,12 +13,12 @@ $bbf = new BBFunctions;
 require("htdocs/dbsetup.php");
 $troID=$_GET['tro'];
 $troID=stripslashes($troID);
-$troID=mysql_real_escape_string($troID);
+$troID=html_escape($troID);
 
 $troResult = $dbf->queryselect("SELECT id, name, text FROM technicalreadouts WHERE id='$troID';");
-if(mysql_num_rows($troResult)==1)
+if(mysqli_num_rows($troResult)==1)
 {
-  $troArray = mysql_fetch_array($troResult, MYSQL_NUM);
+  $troArray = mysqli_fetch_array($troResult, MYSQLI_NUM);
 
   $text=nl2br($troArray[2]);
   $text=$troArray[2];

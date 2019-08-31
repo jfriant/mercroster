@@ -42,7 +42,7 @@ class Unitparser extends Parser
                 $queryArray[sizeof($queryArray)]="UPDATE unit SET parent='0' WHERE id='{$id}';";
                 //update parellal subunits' PrefPos if needed
                 $positionsiftcrrewresult=$dbf->queryselect("SELECT id, prefpos FROM unit WHERE parent='{$parent}';");
-                while($array = mysql_fetch_array($positionsiftcrrewresult, MYSQL_NUM))
+                while($array = mysqli_fetch_array($positionsiftcrrewresult, MYSQLI_NUM))
                 {
                   if($array[1]>$prefpos && $array[0]!=$ID)
                   {
@@ -94,7 +94,7 @@ class Unitparser extends Parser
                 {
                   $queryArray[sizeof($queryArray)]="UPDATE unit SET parent='0', prefpos='0' WHERE ID='{$id}';";
                   $positionsiftcrrewresult=$dbf->queryselect("SELECT id, prefpos FROM unit WHERE Parent='{$parent}';");
-                  while($array = mysql_fetch_array($positionsiftcrrewresult, MYSQL_NUM))
+                  while($array = mysqli_fetch_array($positionsiftcrrewresult, MYSQLI_NUM))
                   {
                     if($array[1]>$prefpos && $array[0]!=$id)
                     {
@@ -164,7 +164,7 @@ class Unitparser extends Parser
               }
               if($errMSG=="")
               {
-                $queryArray[sizeof($queryArray)]="INSERT INTO unit (type, name, parent, limage, rimage, level, text) VALUES ('{$type}', '{$name}', '0', '{$limage}', '{$rimage}', '{$level}', '{$text}');";
+                $queryArray[sizeof($queryArray)]="INSERT INTO unit (type, name, parent, limage, rimage, level, text, prefpos) VALUES ('{$type}', '{$name}', '0', '{$limage}', '{$rimage}', '{$level}', '{$text}', 0);";
                 $dbf->queryarray($queryArray);
                 $parseheader="location:index.php?action=unittable&unit=0";
               }
@@ -183,19 +183,19 @@ class Unitparser extends Parser
                 $queryArray[sizeof($queryArray)]="DELETE FROM unit WHERE id='{$id}';";
                 //need to set each attached crew's parent to 0
                 $result=$dbf->queryselect("SELECT id FROM crew WHERE parent='{$id}';");
-                while($array = mysql_fetch_array($result, MYSQL_NUM))
+                while($array = mysqli_fetch_array($result, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)]="UPDATE crew SET parent='0' WHERE id='{$array[0]}';";
                 }
                 //need to set each attached subunit's parent to 0
                 $result=$dbf->queryselect("SELECT id FROM unit WHERE parent='{$id}';");
-                while($array = mysql_fetch_array($result, MYSQL_NUM))
+                while($array = mysqli_fetch_array($result, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)]="UPDATE unit SET parent='0', prefpos='0' WHERE id='{$array[0]}';";
                 }
                 //update parellal subunits' PrefPos if needed
                 $result=$dbf->queryselect("SELECT id, prefpos FROM unit WHERE parent='{$parent}';");
-                while($array = mysql_fetch_array($result, MYSQL_NUM))
+                while($array = mysqli_fetch_array($result, MYSQLI_NUM))
                 {
                   if($array[1]>$prefpos && $array[0]!=$id)
                   {
@@ -205,7 +205,7 @@ class Unitparser extends Parser
                 }
                 //if unit is someones favored unit, set that user's favored unit to 0
                 $result=$dbf->queryselect("SELECT DISTINCT id FROM members WHERE favoredunit='{$id}';");
-                while($array = mysql_fetch_array($result, MYSQL_NUM))
+                while($array = mysqli_fetch_array($result, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)]="UPDATE members SET favoredunit='0' WHERE id='{$array[0]}';";
                 }

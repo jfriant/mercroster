@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('F3xVH894Vdsv'))
 {
   header('HTTP/1.0 404 not found');
@@ -15,7 +16,7 @@ $gblf = new GlobalFunctions;
 require("htdocs/dbsetup.php");
 $personnelID = $_GET['personnel'];
 $personnelID = stripslashes($personnelID);
-$personnelID = mysql_real_escape_string($personnelID);
+$personnelID = html_escape($personnelID);
 
 function age($BDay, $CDay)
 {
@@ -43,30 +44,30 @@ function age($BDay, $CDay)
 
 //Need to determine what type of roster to fecth from database
 $personnelResult = $dbf->queryselect("SELECT c.id, r.rankname, c.lname, c.fname, c.callsign, c.joiningdate, c.notes, v.subtype, v.name as equipmentname, u.name as unitname, c.bday, c.status, u.id as unitid, v.id as equipmentid, c.image, c.crewnumber FROM crew c LEFT JOIN ranks r ON c.rank=r.number LEFT JOIN equipment v ON c.id=v.crew LEFT JOIN unit u ON c.parent=u.id WHERE c.id='$personnelID';");
-if(mysql_num_rows($personnelResult)==1)
+if(mysqli_num_rows($personnelResult)==1)
 {
   //Fetching used dates data
   $datesResult = $dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-  $datesArray = mysql_fetch_array($datesResult, MYSQL_NUM);
+  $datesArray = mysqli_fetch_array($datesResult, MYSQLI_NUM);
 
-  $personnelArray = mysql_fetch_array($personnelResult, MYSQL_BOTH);
+  $personnelArray = mysqli_fetch_array($personnelResult, MYSQLI_BOTH);
   
-  //$crewtypeResult = $dbf->queryselect("SELECT * FROM crewtypes WHERE id='$personnelArray[type]';");
-  //$crewtypeArray = mysql_fetch_array($crewtypeResult, MYSQL_NUM);
+  //$crewtypeResult = $dbf->queryselect("SELECT * FROM crewtypes WHERE id='$personnelArray['type']';");
+  //$crewtypeArray = mysqli_fetch_array($crewtypeResult, MYSQLI_NUM);
 
-  $personnelSkillResult=$dbf->queryselect("SELECT st.name, s.value FROM skills s, skilltypes st WHERE s.skill=st.id AND s.person='{$personnelArray[id]}' ORDER BY st.name ASC;");
+  $personnelSkillResult=$dbf->queryselect("SELECT st.name, s.value FROM skills s, skilltypes st WHERE s.skill=st.id AND s.person='{$personnelArray['id']}' ORDER BY st.name ASC;");
 
   //Fetch special abilities
-  $usedAbilities=$dbf->resulttoarray($dbf->queryselect("SELECT a.id, t.name, a.notes, a.ability, t.id AS abilityid FROM abilities a, abilitytypes t WHERE a.person='{$personnelArray[id]}' AND a.ability=t.id;"));
+  $usedAbilities=$dbf->resulttoarray($dbf->queryselect("SELECT a.id, t.name, a.notes, a.ability, t.id AS abilityid FROM abilities a, abilitytypes t WHERE a.person='{$personnelArray['id']}' AND a.ability=t.id;"));
         
   //Fetch kills from database
   $killsRetVal = $dbf->queryselect("SELECT parent, type, KillDate FROM kills;");
   $i=0;
-  while($killsArray[$i] = mysql_fetch_array($killsRetVal, MYSQL_NUM))
+  while($killsArray[$i] = mysqli_fetch_array($killsRetVal, MYSQLI_NUM))
   {
     $i++;
   }
-  mysql_free_result($killsRetVal);
+  mysqli_free_result($killsRetVal);
 
   if($action!="notable") 
   {
@@ -78,14 +79,14 @@ if(mysql_num_rows($personnelResult)==1)
   echo "<b>Personnel Information</b>\n";
   if($action!="units" && $action!="notable" && isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
   {
-    echo "<a class='genericedit' href='index.php?action=editpersonnel&amp;personnel={$personnelArray[id]}'>edit</a>\n";
+    echo "<a class='genericedit' href='index.php?action=editpersonnel&amp;personnel={$personnelArray['id']}'>edit</a>\n";
   }
   echo "</div>\n";
   echo "<div class='genericarea'>\n";
-  if($personnelArray[image]!="" && $personnelArray[image]!=null)
+  if($personnelArray['image']!="" && $personnelArray['image']!=null)
   {
     echo "<div class='unitimage'>\n";
-    echo "<img class='unitlogoimage' src='./images/personnelimages/{$personnelArray[image]}' alt='{$personnelArray[image]}' />\n";
+    echo "<img class='unitlogoimage' src='./images/personnelimages/{$personnelArray['image']}' alt='{$personnelArray['image']}' />\n";
     echo "</div>\n";
     echo "<div class='unittableright'>\n";
   }
@@ -97,25 +98,25 @@ if(mysql_num_rows($personnelResult)==1)
   //Last Name
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>First Name:</b></td>\n";
-  echo "<td class='generictablecell85' colspan='2'>{$personnelArray[fname]}</td>\n";
+  echo "<td class='generictablecell85' colspan='2'>{$personnelArray['fname']}</td>\n";
   echo "</tr>\n";
   //First Name
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Last Name:</b></td>\n";
-  echo "<td class='generictablecell85' colspan='2'>{$personnelArray[lname]}</td>\n";
+  echo "<td class='generictablecell85' colspan='2'>{$personnelArray['lname']}</td>\n";
   echo "</tr>\n";
   //Rank
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Rank:</b></td>\n";
-  echo "<td class='generictablecell85' colspan='2'>{$personnelArray[rankname]}</td>\n";
+  echo "<td class='generictablecell85' colspan='2'>{$personnelArray['rankname']}</td>\n";
   echo "</tr>\n";
   //Call Sign
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Callsign:</b></td>\n";
-  echo "<td class='generictablecell85' colspan='2'>{$personnelArray[callsign]}</td>\n";
+  echo "<td class='generictablecell85' colspan='2'>{$personnelArray['callsign']}</td>\n";
   echo "</tr>\n";
   //Age
-  $BDay=$personnelArray[bday];
+  $BDay=$personnelArray['bday'];
   $CDay=$datesArray[2];
   $Age=age($BDay, $CDay);
   echo "<tr>\n";
@@ -123,17 +124,17 @@ if(mysql_num_rows($personnelResult)==1)
   echo "<td class='generictablecell85' colspan='2'>{$Age}</td>\n";
   echo "</tr>\n";
   //Status
-  $Status=$personnelArray[status];
+  $Status=$personnelArray['status'];
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Status:</b></td>\n";
   echo "<td class='generictablecell85' colspan='2'>{$Status}</td>\n";
   echo "</tr>\n";
 
-  while($skillArray =  mysql_fetch_array($personnelSkillResult, MYSQL_ASSOC))
+  while($skillArray =  mysqli_fetch_array($personnelSkillResult, MYSQLI_ASSOC))
   {
     echo "<tr>\n";
-    echo "<td class='generictablecell15'><b>{$skillArray[name]}:</b></td>\n";
-    echo "<td class='generictablecell85' colspan='2'>{$skillArray[value]}</td>\n";
+    echo "<td class='generictablecell15'><b>{$skillArray['name']}:</b></td>\n";
+    echo "<td class='generictablecell85' colspan='2'>{$skillArray['value']}</td>\n";
     echo "</tr>\n";
   }
   //special abilities
@@ -164,22 +165,22 @@ if(mysql_num_rows($personnelResult)==1)
   //Equipment
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Equipment:</b></td>\n";
-  $ename = $gblf->displayEquipmentName($personnelArray[subtype], $personnelArray[equipmentname], $dbf);
+  $ename = $gblf->displayEquipmentName($personnelArray['subtype'], $personnelArray['equipmentname'], $dbf);
   if($action!="notable") 
   {
-   	echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=equipment&amp;equipment={$personnelArray[equipmentid]}'>{$ename}</a></td>\n";
+   	echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=equipment&amp;equipment={$personnelArray['equipmentid']}'>{$ename}</a></td>\n";
   }
   else
   {
-    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=readout&amp;equipment={$personnelArray[equipmentid]}'>{$ename}</a></td>\n";
+    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=readout&amp;equipment={$personnelArray['equipmentid']}'>{$ename}</a></td>\n";
   }
   echo "</tr>\n";
   //Squad
-  if($personnelArray[crewnumber]>1)
+  if($personnelArray['crewnumber']>1)
   {
     echo "<tr>\n";
     echo "<td class='generictablecell15'><b>Squad Size:</b></td>\n";
-    echo "<td class='generictablecell85' colspan='2'>{$personnelArray[crewnumber]}</td>\n";
+    echo "<td class='generictablecell85' colspan='2'>{$personnelArray['crewnumber']}</td>\n";
     echo "</tr>\n";
   }
   //Assigned unit
@@ -187,15 +188,15 @@ if(mysql_num_rows($personnelResult)==1)
   echo "<td class='generictablecell15'><b>Assigned to:</b></td>\n";
   if($action!="notable")
   {
-    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=unit&amp;unit={$personnelArray[unitid]}'>{$personnelArray[unitname]}</a></td>\n";
+    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=unit&amp;unit={$personnelArray['unitid']}'>{$personnelArray['unitname']}</a></td>\n";
   }
   else
   {
-    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=units&amp;unit={$personnelArray[unitid]}'>{$personnelArray[unitname]}</a></td>\n";
+    echo "<td class='generictablecell85' colspan='2'><a class='personnellink' href='index.php?action=units&amp;unit={$personnelArray['unitid']}'>{$personnelArray['unitname']}</a></td>\n";
   }
   echo "</tr>\n";
   //Joining Date
-  $date = $dp->datestring($personnelArray[joiningdate]);
+  $date = $dp->datestring($personnelArray['joiningdate']);
   echo "<tr>\n";
   echo "<td class='generictablecell15'><b>Joined:</b></td>\n";
   echo "<td class='generictablecell85' colspan='2'>{$date}</td>\n";
@@ -205,7 +206,7 @@ if(mysql_num_rows($personnelResult)==1)
   $i=0;
   foreach ($killsArray as $value)
   {
-    if($value[0]==$personnelArray[id])
+    if($value[0]==$personnelArray['id'])
     {
       if($i==0)
       {
@@ -228,10 +229,10 @@ if(mysql_num_rows($personnelResult)==1)
   echo "</table>\n";
   echo "</div>\n";
   //Notes
-  if($personnelArray[notes]!="" && $personnelArray[notes]!=null)
+  if($personnelArray['notes']!="" && $personnelArray['notes']!=null)
   {
     echo "<div class='unitnotes'>\n";
-    $text=nl2br($personnelArray[notes]);
+    $text=nl2br($personnelArray['notes']);
     $text=$bbf->addTags($text);
     echo "<b>Notes:</b><br />\n";
     echo "$text\n";

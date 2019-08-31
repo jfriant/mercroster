@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('t5hdGh86G'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data=stripslashes($data);
-  $data=mysql_real_escape_string($data);
+  $data=html_escape($data);
   $data=strip_tags($data);
   return $data;
 }
@@ -47,8 +48,8 @@ $link="contract&amp;contract={$id}";
 
 //Fetching contracts from database
 $contractResult=$dbf->queryselect("SELECT id, start, end, employer, missiontype, target, result, name FROM contracts WHERE id='{$id}';");
-$contractArray=mysql_fetch_array($contractResult, MYSQL_NUM);
-$cnumber=mysql_num_rows($contractResult);
+$contractArray=mysqli_fetch_array($contractResult, MYSQLI_NUM);
+$cnumber=mysqli_num_rows($contractResult);
 if($cnumber==1)
 {
   //Fetching log data linked to this contract
@@ -137,7 +138,7 @@ if($cnumber==1)
     echo "</tr>\n";
     echo "</thead>\n";
     echo "<tbody class='rostertable'>\n";
-    while($array = mysql_fetch_array($logResult, MYSQL_NUM))
+    while($array = mysqli_fetch_array($logResult, MYSQLI_NUM))
     {
       $date=$dp->datestring($array[4]);
       echo "<tr>\n";

@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('45Fsc35G53'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,7 +9,7 @@ if(!defined('45Fsc35G53'))
 require("htdocs/dbsetup.php");
 $killID=$_GET['kill'];
 $killID=stripslashes($killID);
-$killID=mysql_real_escape_string($killID);
+$killID=html_escape($killID);
 
 require("includes/InputFields.php");
 $inputFields=new InputFields;
@@ -30,9 +31,9 @@ if(isset($_SESSION['SESS_ID'])  && $_SESSION['SESS_TYPE']<='3')
   $datesResult = $dbf->queryselect("SELECT * FROM dates WHERE id=1;");
   if(!$datesResult)
   {
-    die('Could not get that dates data: ' . mysql_error());
+    die('Could not get that dates data: ' . mysqli_error());
   }
-  $datesArray = mysql_fetch_array($datesResult, MYSQL_NUM);
+  $datesArray = mysqli_fetch_array($datesResult, MYSQLI_NUM);
   $date=$datesArray[1];
   $startingYear=strtok($date, "-");
   $date=$datesArray[3];
@@ -42,15 +43,15 @@ if(isset($_SESSION['SESS_ID'])  && $_SESSION['SESS_TYPE']<='3')
   $personelResult = $dbf->queryselect("SELECT id, lname, fname FROM crew ORDER BY fname, lname;");
   if(!$personelResult)
   {
-    die('Could not get that mission Kills data: ' . mysql_error());
+    die('Could not get that mission Kills data: ' . mysqli_error());
   }
 
   if(isset($_GET['kill']))
   {
     $killResult=$dbf->queryselect("SELECT parent, type, weight, killdate, equipment, eweight FROM kills WHERE id='$killID';");
-    if(mysql_num_rows($killResult)==1)
+    if(mysqli_num_rows($killResult)==1)
     {
-      $array=mysql_fetch_array($killResult, MYSQL_NUM);
+      $array=mysqli_fetch_array($killResult, MYSQLI_NUM);
       $head="<h1 class='headercenter'>Edit Kill</h1>\n";
       $submitButtonText='Save';
       $date=$array[3];
@@ -88,7 +89,7 @@ if(isset($_SESSION['SESS_ID'])  && $_SESSION['SESS_TYPE']<='3')
     echo "<td class='edittableleft'>Awarded to:</td>\n";
     echo "<td class='edittableright' colspan='6'>\n";
     echo "<select class='edittablebox' name='parent'>\n";
-    while($personelArray = mysql_fetch_array($personelResult, MYSQL_NUM))
+    while($personelArray = mysqli_fetch_array($personelResult, MYSQLI_NUM))
     {
       if($personelArray[0]==$array[0])
       {

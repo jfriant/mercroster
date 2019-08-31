@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('FD3rasG34dd'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,7 +9,7 @@ if(!defined('FD3rasG34dd'))
 require("htdocs/dbsetup.php");
 $contractID=$_GET['contract'];
 $contractID=stripslashes($contractID);
-$contractID=mysql_real_escape_string($contractID);
+$contractID=html_escape($contractID);
 
 require("includes/InputFields.php");
 $inputFields=new InputFields;
@@ -27,7 +28,7 @@ if(isset($_SESSION['SESS_ID']) || (trim($_SESSION['SESS_ID']) != ''))
 {
   //Fetching used dates data
   $datesResult = $dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-  $datesArray = mysql_fetch_array($datesResult, MYSQL_NUM);
+  $datesArray = mysqli_fetch_array($datesResult, MYSQLI_NUM);
   $date=$datesArray[1];
   $startingYear=strtok($date, "-");
   $date=$datesArray[3];
@@ -37,9 +38,9 @@ if(isset($_SESSION['SESS_ID']) || (trim($_SESSION['SESS_ID']) != ''))
   {
     $result = $dbf->queryselect("SELECT id, start, end, employer, missiontype, target, result, name FROM contracts WHERE id='$contractID';");
     //Check that we found correct log entry
-    if(mysql_num_rows($result)==1)
+    if(mysqli_num_rows($result)==1)
     {
-      $array = mysql_fetch_array($result, MYSQL_NUM);
+      $array = mysqli_fetch_array($result, MYSQLI_NUM);
       $head="<h1 class='headercenter'>Edit Contract information</h1>\n";
       $submitButtonText='Save';
       $date=$array[1];

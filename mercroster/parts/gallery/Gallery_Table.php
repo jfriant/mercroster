@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Ziq93mdD34'))
 {
   header('HTTP/1.0 404 not found');
@@ -11,7 +12,7 @@ $bbf = new BBFunctions;
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 if(!isset($first))
 {
   $first=0;
@@ -19,7 +20,7 @@ if(!isset($first))
 
 $o=$_GET['order'];
 $o=stripslashes($o);
-$o=mysql_real_escape_string($o);
+$o=html_escape($o);
 
 switch ($o)
 {
@@ -67,10 +68,10 @@ if($rnumber>0)
   echo "</thead>\n";
   echo "<tbody class='rostertable'>\n";
 
-  while($array=mysql_fetch_array($galleryResult, MYSQL_ASSOC))
+  while($array=mysqli_fetch_array($galleryResult, MYSQLI_ASSOC))
   {
     echo "<tr>\n";
-    echo "<td class='rostertable'><a class='personnellink' href='index.php?action=gallery&amp;gallery={$array[id]}'>{$array['name']}</a></td>\n";
+    echo "<td class='rostertable'><a class='personnellink' href='index.php?action=gallery&amp;gallery={$array['id']}'>{$array['name']}</a></td>\n";
     echo "<td class='rostertable'>{$array['type']}</td>\n";
     if(isset($array['sitename']))
     {

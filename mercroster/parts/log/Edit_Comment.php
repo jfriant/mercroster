@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('9Gu4VdtJ453'))
 {
   header('HTTP/1.0 404 not found');
@@ -10,7 +11,7 @@ function strip($data)
 {
   require("htdocs/dbsetup.php");
   $data = stripslashes($data);
-  $data = mysql_real_escape_string($data);
+  $data = html_escape($data);
   $data = strip_tags($data);
   return $data;
 }
@@ -44,9 +45,9 @@ if(isset($_GET['quote']) && $_GET['quote']!="")
   {
     $quoredResult=$dbf->queryselect("SELECT id AS cid, parent AS id, op, opdate, text FROM comments WHERE id='{$quotedID}';");
   }
-  if(mysql_num_rows($quoredResult)==1)
+  if(mysqli_num_rows($quoredResult)==1)
   {
-    $quoredArray=mysql_fetch_array($quoredResult, MYSQL_ASSOC);
+    $quoredArray=mysqli_fetch_array($quoredResult, MYSQLI_ASSOC);
     if($quotedType=="c")
     {
       $first="msg.{$quoredArray['cid']}";
@@ -69,7 +70,7 @@ if(isset($_SESSION['SESS_ID']) || $_SESSION['SESS_ID']!="")
   if($edit)
   {
     $result=$dbf->queryselect("SELECT * FROM comments WHERE ID='$id';");
-    $array=mysql_fetch_array($result, MYSQL_NUM);
+    $array=mysqli_fetch_array($result, MYSQLI_NUM);
     echo "<h1 class='headercenter'>Edit Comment</h1>\n";
     $submitButtonText="Save";
     $parentid = $array[1];

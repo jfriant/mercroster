@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('s3Ew4bjJd4f'))
 {
   header('HTTP/1.0 404 not found');
@@ -27,7 +28,7 @@ if(!isset($_SESSION['SESS_ID']) && isset($_COOKIE['mrrinf']))
 $ip=isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 require("htdocs/dbsetup.php");
 $ip=stripslashes($ip);
-$ip=mysql_real_escape_string($ip);
+$ip=html_escape($ip);
 
 $guestfuntions->CheckLogged($dbf);
 $guests=$guestfuntions->GetGuestNumber($dbf);
@@ -41,9 +42,9 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_ID']!="" && isset($_SESSION['S
   //get user preferences from database
   require("htdocs/dbsetup.php");
   $data=stripslashes($_SESSION['SESS_ID']);
-  $data=mysql_real_escape_string($data);
+  $data=html_escape($data);
   $userResult=$dbf->queryselect("SELECT timeoffset, timeformat, sitename, favoredunit FROM members WHERE id='{$data}';");
-  $timesets=mysql_fetch_array($userResult, MYSQL_NUM);
+  $timesets=mysqli_fetch_array($userResult, MYSQLI_NUM);
 
   //set time settings
   $offset=$timesets[0];
@@ -70,13 +71,13 @@ $users=$userfuntions->checkUsers($dbf);
 
 //Fetching used dates data
 $currentGameDateResult=$dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-$currentGameDateArray=mysql_fetch_array($currentGameDateResult, MYSQL_NUM);
+$currentGameDateArray=mysqli_fetch_array($currentGameDateResult, MYSQLI_NUM);
 $currentDate=$currentGameDateArray[2];
 $currentGameDate=$dp->datestring($currentGameDateArray[2]);
 
 //Fetching used dates data
 $commandResult=$dbf->queryselect("SELECT icon, abbreviation, header FROM command WHERE id=1;");
-$commandArray=mysql_fetch_array($commandResult, MYSQL_NUM);
+$commandArray=mysqli_fetch_array($commandResult, MYSQLI_NUM);
 $commandIcon=$commandArray[0];
 $commandAbb=$commandArray[1];
 $commandHeader=$commandArray[2];

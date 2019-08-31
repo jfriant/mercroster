@@ -18,7 +18,7 @@ class Feed_Generator
     $headerResult = $this->dbf->queryselect("SELECT name, motto, image FROM command WHERE id='1';");
     $logResult = $this->dbf->queryselect("SELECT r.id, r.logtype, r.topic, l.type, r.start, r.text FROM logentry r LEFT JOIN logtypes l ON r.logtype=l.id ORDER BY r.start DESC, r.opdate DESC, r.id ASC LIMIT 0, 10;");
 
-    while($array=mysql_fetch_array($headerResult, MYSQL_ASSOC))
+    while($array=mysqli_fetch_array($headerResult, MYSQLI_ASSOC))
     {
       $details = '<?xml version="1.0" encoding="UTF-8" ?>
 	                <rss version="2.0" xml:lang="en-US"> 
@@ -28,7 +28,7 @@ class Feed_Generator
 	                        <description>'. $bbf->removeTags($array['description']) .'</description>'; 
     }
 
-    while($array=mysql_fetch_array($logResult, MYSQL_ASSOC))
+    while($array=mysqli_fetch_array($logResult, MYSQLI_ASSOC))
     {
       $items .= '<item>
 	                <title>'. $array["topic"] .'</title> 

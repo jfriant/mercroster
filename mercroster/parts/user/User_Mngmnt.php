@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('V2tyU8lMT'))
 {
   header('HTTP/1.0 404 not found');
@@ -9,7 +10,7 @@ if(!defined('V2tyU8lMT'))
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 
 $type=$_SESSION['SESS_TYPE'];
 
@@ -53,7 +54,7 @@ else
   echo "<th class='usertable'>Status</th>\n";
   echo "<th class='usertable'>Post Count</th>\n";
   echo "</tr>\n";
-  while ($userArray = mysql_fetch_array($userResult, MYSQL_NUM))
+  while ($userArray = mysqli_fetch_array($userResult, MYSQLI_NUM))
   {
     if($userArray[7]==1)//if user is marked online
     {

@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('T56ujjd3n73FG'))
 {
   header('HTTP/1.0 404 not found');
@@ -44,15 +45,15 @@ function age($BDay, $CDay)
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 
 $personnelType=$_GET["type"];
 $personnelType=stripslashes($personnelType);
-$personnelType=mysql_real_escape_string($personnelType);
+$personnelType=html_escape($personnelType);
 
 $personnelStatus=$_GET["status"];
 $personnelStatus=stripslashes($personnelStatus);
-$personnelStatus=mysql_real_escape_string($personnelStatus);
+$personnelStatus=html_escape($personnelStatus);
 
 require("includes/PageBar.php");
 $pb=new PageBar;
@@ -83,9 +84,9 @@ if(isset($_GET["type"]))
   $personelQeury="SELECT callsign FROM crew c LEFT JOIN personnelpositions p ON c.id=p.person WHERE p.personneltype='{$personnelType}' AND ";
   $personelQeury.=$gstatus;
   $personnelResult=$dbf->queryselect($personelQeury);
-  while($array = mysql_fetch_array($personnelResult, MYSQL_BOTH))
+  while($array = mysqli_fetch_array($personnelResult, MYSQLI_BOTH))
   {
- 	if(!is_null($array[callsign]) && $array[callsign]!="") {
+ 	if(!is_null($array['callsign']) && $array['callsign']!="") {
  		$callUsed = 1;
  		break;
  	}
@@ -140,9 +141,9 @@ if(isset($_GET["type"]))
   {
     //Validating Personel Type
     $checkResult=$dbf->queryselect("SELECT * FROM crewtypes WHERE id='$personnelType';");
-    if(mysql_num_rows($checkResult)>0)
+    if(mysqli_num_rows($checkResult)>0)
     {
-      $checkArray=mysql_fetch_array($checkResult, MYSQL_NUM);
+      $checkArray=mysqli_fetch_array($checkResult, MYSQLI_NUM);
 
       $skillsUsedResult=$dbf->queryselect("SELECT st.name, st.shortname, st.id FROM skillrequirements sr, skilltypes st WHERE sr.skilltype=st.id AND personneltype='{$personnelType}' ORDER BY st.name ASC;");
       $skillsUsedArray=$dbf->resulttoarray($skillsUsedResult);
@@ -239,7 +240,7 @@ if(isset($_GET["type"]))
 
   //Fetching used dates data
   $datesResult=$dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-  $datesArray=mysql_fetch_array($datesResult, MYSQL_NUM);
+  $datesArray=mysqli_fetch_array($datesResult, MYSQLI_NUM);
 
   //Parsing table for certain personneltype
 
@@ -306,18 +307,18 @@ if(isset($_GET["type"]))
     echo "</tr>\n";
     echo "</thead>\n";
     echo "<tbody class='rostertable'>\n";
-    while($array = mysql_fetch_array($personnelResult, MYSQL_BOTH))
+    while($array = mysqli_fetch_array($personnelResult, MYSQLI_BOTH))
     {
       echo "<tr>\n";
-      echo "<td class='rostertable'>{$array[rankname]}</td>\n";
-      echo "<td class='rostertable'><a class='rostertable' href='index.php?action=personnel&amp;personnel={$array[id]}'>{$array[fname]} {$array[lname]}</a>";
-      if($array[notes]!="")
+      echo "<td class='rostertable'>{$array['rankname']}</td>\n";
+      echo "<td class='rostertable'><a class='rostertable' href='index.php?action=personnel&amp;personnel={$array['id']}'>{$array['fname']} {$array['lname']}</a>";
+      if($array['notes']!="")
       {
         echo "<img style='margin-top:2px; margin-right:2px; float:right;' src='./images/small/notes.png' alt='notes' />";
       }
       echo "</td>\n";
       if($callUsed) {
-      	echo "<td class='rostertable'>{$array[callsign]}</td>\n";
+      	echo "<td class='rostertable'>{$array['callsign']}</td>\n";
       }
       for ($i=0; $i<sizeof($skillsUsedArray); $i++)
       {
@@ -332,23 +333,23 @@ if(isset($_GET["type"]))
         }
         echo "<td class='rostertable'>$array[$j]</td>\n";
       }
-      $BDay=$array[bday];
+      $BDay=$array['bday'];
       $CDay=$datesArray[2];
       $Age=age($BDay, $CDay);
       echo "<td class='rostertable'>{$Age}</td>\n";
       if($equippable && $personnelStatus!="out")//only for those who have capasity to be assigned to vehicle
       {
-        $ename = $gblf->displayEquipmentName($array[subtype], $array[vname], $dbf);
+        $ename = $gblf->displayEquipmentName($array['subtype'], $array['vname'], $dbf);
       	echo "<td class='rostertable'>{$ename}</td>\n";
       }
       if($personnelStatus!="out")
       {
-        echo "<td class='rostertable'>{$array[uname]}</td>\n";
+        echo "<td class='rostertable'>{$array['uname']}</td>\n";
       }
-      echo "<td class='rostertable'>{$array[status]}</td>\n";
+      echo "<td class='rostertable'>{$array['status']}</td>\n";
       if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<=$permission)//only for those who have rights for editing
       {
-        echo "<td class='rostertable'><a class='rostertable' href='index.php?action=editpersonnel&amp;personnel={$array[id]}'>edit</a></td>\n";
+        echo "<td class='rostertable'><a class='rostertable' href='index.php?action=editpersonnel&amp;personnel={$array['id']}'>edit</a></td>\n";
       }
       echo "</tr>\n";
     }
@@ -387,11 +388,11 @@ else
     echo "</tr>\n";
     echo "</thead>\n";
     echo "<tbody class='rostertable'>\n";
-    while($array = mysql_fetch_array($personnelTypeResult, MYSQL_ASSOC))
+    while($array = mysqli_fetch_array($personnelTypeResult, MYSQLI_ASSOC))
     {
       echo "<tr>\n";
-      echo "<td class='rostertabletype'><a class='rostertable' href='index.php?action=personneltable&amp;type={$array[id]}&amp;order=0&amp;first=0'>{$array[type]}s</a></td>\n";
-      echo "<td class='rostertablenumber'>{$array[poscount]}</td>\n";
+      echo "<td class='rostertabletype'><a class='rostertable' href='index.php?action=personneltable&amp;type={$array['id']}&amp;order=0&amp;first=0'>{$array['type']}s</a></td>\n";
+      echo "<td class='rostertablenumber'>{$array['poscount']}</td>\n";
       echo "</tr>\n";
     }
     echo "<tr>\n";

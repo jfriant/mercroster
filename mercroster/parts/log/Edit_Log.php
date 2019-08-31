@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('5gJHk452Gs'))
 {
   header('HTTP/1.0 404 not found');
@@ -9,18 +10,18 @@ if(!defined('5gJHk452Gs'))
 require("htdocs/dbsetup.php");
 $logID=$_GET['log'];
 $logID=stripslashes($logID);
-$logID=mysql_real_escape_string($logID);
+$logID=html_escape($logID);
 
 $logType=$_GET['type'];
 $logType=stripslashes($logType);
-$logType=mysql_real_escape_string($logType);
+$logType=html_escape($logType);
 
 require("includes/InputFields.php");
 $inputFields=new InputFields;
 
 //Fetching log type information
 $logTypeResult=$dbf->queryselect("SELECT * FROM logtypes WHERE id='{$logType}';");
-if(mysql_num_rows($logTypeResult)==1)
+if(mysqli_num_rows($logTypeResult)==1)
 {
   $logTypeArray=$dbf->resulttoarray($logTypeResult);
   $logTypeArray=$logTypeArray[0];
@@ -29,7 +30,7 @@ if(mysql_num_rows($logTypeResult)==1)
   {
     //Fetching used dates data
     $datesResult = $dbf->queryselect("SELECT * FROM dates WHERE id=1;");
-    $datesArray = mysql_fetch_array($datesResult, MYSQL_NUM);
+    $datesArray = mysqli_fetch_array($datesResult, MYSQLI_NUM);
     $date=$datesArray[1];
     $startingYear=strtok($date, "-");
     $date=$datesArray[3];
@@ -42,9 +43,9 @@ if(mysql_num_rows($logTypeResult)==1)
     {
       $result=$dbf->queryselect("SELECT * FROM logentry WHERE id='$logID';");
       //Check that we found correct log entry
-      if(mysql_num_rows($result)==1)
+      if(mysqli_num_rows($result)==1)
       {
-        $array=mysql_fetch_array($result, MYSQL_NUM);
+        $array=mysqli_fetch_array($result, MYSQLI_NUM);
         $submitButtonText='Save';
         $startDate=$array[3];
         $endDate=$array[4];

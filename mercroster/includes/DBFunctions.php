@@ -5,49 +5,50 @@ class DBFunctions
   /**
    * This Funtion is used to make SELECT qeuries and then return result array
    * @param <array> $queryArray
-   * @return <msql query>
+   * @return mysqli_result
    */
   function queryselect($queryArray)
   {
     require("htdocs/dbsetup.php");
-    $result = mysql_query($queryArray, $conn);
-    mysql_close($conn);
+    $result = mysqli_query($conn, $queryArray);
+    mysqli_close($conn);
     if(!$result )
     {
       die('SQL ERROR '. $queryArray);
     }
     return $result;
-    mysql_close($conn);
   }
 
   /**
    * This function is used to make INSERT and UPDATE queries.
-   * @param <msql query> $queryArray
+   * @param <mysqli query> $queryArray
    */
   function queryarray($queryArray)
   {
     require("htdocs/dbsetup.php");
     for($i=0; $i<sizeof($queryArray);$i++)
     {
-      $result=mysql_query($queryArray[$i], $conn);
+      $result=mysqli_query($conn, $queryArray[$i]);
       if(!$result)
       {
-        die('query :' . $i . ' : ' . $queryArray[$i] . '');
+          echo "ERROR!  Failed to perform SQL query: ";
+          echo 'query :' . $i . ' : ' . $queryArray[$i] . '';
+          die(mysqli_error($conn));
       }
     }
-    mysql_close($conn);
+    mysqli_close($conn);
   }
 
-  /**
-   * This function is used to return array of arrays containing quered table data
-   * @param <msql query> $result
-   * @return <array>
-   */
+    /**
+     * This function is used to return array of arrays containing quered table data
+     * @param <mysqli query> $result
+     * @return array
+     */
   function resulttoarray($result)
   {
     $counter=0;
     $returnArray = array();
-    while($array = mysql_fetch_array($result, MYSQL_BOTH))
+    while($array = mysqli_fetch_array($result, MYSQLI_BOTH))
     {
       $returnArray[$counter]=$array;
       $counter++;
@@ -57,13 +58,13 @@ class DBFunctions
 
   /**
    * This function is used to return array containing quered table data
-   * @param <msql query> $result
-   * @return <array>
+   * @param <mysqli query> $result
+   * @return array
    */
   function resulttoarraysingle($result)
   {
     $counter=0;
-    while($array = mysql_fetch_array($result, MYSQL_BOTH))
+    while($array = mysqli_fetch_array($result, MYSQLI_BOTH))
     {
       $returnArray[$counter]=$array[0];
       $counter++;

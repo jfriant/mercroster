@@ -15,7 +15,7 @@ class Setupparser  extends Parser
       {
         $newpos=$prefpos-1;
       }
-      $usedCrewTypeArray=mysql_fetch_array($dbf->queryselect("SELECT id FROM {$type} WHERE prefpos='{$newpos}';"), MYSQL_NUM);
+      $usedCrewTypeArray=mysqli_fetch_array($dbf->queryselect("SELECT id FROM {$type} WHERE prefpos='{$newpos}';"), MYSQLI_NUM);
       $otherid=$usedCrewTypeArray[0];
     }
     //echo "{$ID}=> {$newpos} | {$otherid}=>{$prefpos}";
@@ -48,7 +48,7 @@ class Setupparser  extends Parser
                 $queryArray[sizeof($queryArray)]="DELETE FROM crewtypes WHERE id='{$id}';";
                 $queryArray[sizeof($queryArray)]="DELETE FROM skillrequirements WHERE personneltype='{$id}';";
                 $positionresult=$dbf->queryselect("SELECT id, prefpos FROM crewtypes WHERE prefpos>'{$prefpos}';");
-                while($array=mysql_fetch_array($positionresult, MYSQL_NUM))
+                while($array=mysqli_fetch_array($positionresult, MYSQLI_NUM))
                 {
                   $pp = $array[1]-1;
                   $queryArray[sizeof($queryArray)]="UPDATE crewtypes SET prefpos='{$pp}' WHERE id='{$array[0]}';";
@@ -282,7 +282,7 @@ class Setupparser  extends Parser
                 $prefpos=$this->strip($_POST['prefpos']);
                 $queryArray[sizeof($queryArray)]="DELETE FROM unitlevel WHERE id='{$id}';";
                 $positionresult=$dbf->queryselect("SELECT id, prefpos FROM unitlevel WHERE prefpos>'{$prefpos}';");
-                while($array=mysql_fetch_array($positionresult, MYSQL_NUM))
+                while($array=mysqli_fetch_array($positionresult, MYSQLI_NUM))
                 {
                   $pp=$array[1]-1;
                   $queryArray[sizeof($queryArray)]="UPDATE unitlevel SET prefpos='{$pp}' WHERE id='{$array[0]}';";
@@ -359,7 +359,7 @@ class Setupparser  extends Parser
                 $prefpos=$this->strip($_POST['prefpos']);
                 $queryArray[sizeof($queryArray)] = "DELETE FROM equipmenttypes WHERE id='{$id}';";
                 $positionresult=$dbf->queryselect("SELECT id, prefpos FROM equipmenttypes WHERE prefpos>'{$prefpos}';");
-                while($array = mysql_fetch_array($positionresult, MYSQL_NUM))
+                while($array = mysqli_fetch_array($positionresult, MYSQLI_NUM))
                 {
                   $pp = $array[1]-1;
                   $queryArray[sizeof($queryArray)] = "UPDATE equipmenttypes SET prefpos='{$pp}' WHERE id='{$array[0]}';";
@@ -715,7 +715,7 @@ class Setupparser  extends Parser
                 $prefpos=$this->strip($_POST['prefpos']);
                 $queryArray[sizeof($queryArray)]="DELETE FROM pages WHERE id='{$id}';";
                 $positionresult=$dbf->queryselect("SELECT id, prefpos FROM pages WHERE prefpos>'{$prefpos}';");
-                while($array = mysql_fetch_array($positionresult, MYSQL_NUM))
+                while($array = mysqli_fetch_array($positionresult, MYSQLI_NUM))
                 {
                   $pp = $array[1]-1;
                   $queryArray[sizeof($queryArray)] = "UPDATE pages SET prefpos='{$pp}' WHERE id='{$array[0]}';";

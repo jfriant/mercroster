@@ -16,21 +16,21 @@ class UserFunctions
 
   /**
    * This funtion is used to strip all kind of nasty thing out of _POST data
-   * @param <string> $data
-   * @return <string>
+   * @param string $data
+   * @return string
    */
   private function strip($data)
   {
     require("htdocs/dbsetup.php");
     $data=stripslashes($data);
-    $data=mysql_real_escape_string($data);
+    $data=htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $data=strip_tags($data);
     return $data;
   }
 
   /**
    * This funtion is used to return Zulu time in string format
-   * @return <string>
+   * @return string
    */
   private function getZTime()
   {
@@ -80,9 +80,9 @@ class UserFunctions
     list($id, $cookie) = unserialize($line);
     $result = $dbf->queryselect("SELECT id, type, username FROM $tbl_name WHERE cookie='{$cookie}' and id='{$id}'");
 
-    // Mysql_num_row is counting table row
-    $count=mysql_num_rows($result);
-    $loginarray = mysql_fetch_array($result, MYSQL_NUM);
+    // Mysqli_num_row is counting table row
+    $count=mysqli_num_rows($result);
+    $loginarray = mysqli_fetch_array($result, MYSQLI_NUM);
     // If result matched $myusername and $mypassword, table row must be 1 row
     if($count==1)
     {
@@ -134,9 +134,9 @@ class UserFunctions
 
     $result = $dbf->queryselect("SELECT id, type, cookie FROM $tbl_name WHERE username='$myusername' and password='$encrypted_mypassword'");
 
-    // Mysql_num_row is counting table row
-    $count=mysql_num_rows($result);
-    $loginarray=mysql_fetch_array($result, MYSQL_NUM);
+    // Mysqli_num_row is counting table row
+    $count=mysqli_num_rows($result);
+    $loginarray=mysqli_fetch_array($result, MYSQLI_NUM);
     // If result matched $myusername and $mypassword, table row must be 1 row
     if($count==1)
     {
@@ -156,8 +156,8 @@ class UserFunctions
       $this->_registerd=1;
       $ip=$this->strip($ip);
       $ipResult=$dbf->queryselect("SELECT COUNT(ipaddress) AS count, logins, logged FROM guests WHERE ipaddress=INET_ATON('{$ip}') GROUP BY ipaddress;");
-      $ipArray=mysql_fetch_array($ipResult, MYSQL_ASSOC);
-      if($ipArray[count]==1)
+      $ipArray=mysqli_fetch_array($ipResult, mysqli_ASSOC);
+      if($ipArray['count']==1)
       {
         $queryArray[0]="UPDATE guests SET logged='0' WHERE ipaddress=INET_ATON('{$ip}');";
         $dbf->queryarray($queryArray);
@@ -223,10 +223,10 @@ class UserFunctions
     $logType=$this->strip($logType);
     $user=$this->strip($user);
     $latestLogResult=$dbf->queryselect("SELECT id, start FROM logentry WHERE logtype='{$logType}' ORDER BY id DESC LIMIT 1;");
-    $checkCount=mysql_num_rows($latestLogResult);
+    $checkCount=mysqli_num_rows($latestLogResult);
     if($checkCount==1)
     {
-      $latestLogArray=mysql_fetch_array($latestLogResult, MYSQL_NUM);
+      $latestLogArray=mysqli_fetch_array($latestLogResult, MYSQLI_NUM);
       $queryArray[0]="UPDATE lastlog SET lasttopic='$latestLogArray[0]' WHERE member='{$user}' AND logtype='{$logType}';";
       $dbf->queryarray($queryArray);
     }
@@ -240,10 +240,10 @@ class UserFunctions
     $this->_logTypeArray=array();
     $this->_lastTopicArray=array();
     $lastVisitedTopicResult=$dbf->queryselect("SELECT logtype, lasttopic FROM lastlog WHERE member='{$user}' ORDER BY logtype ASC;");
-    while($array=mysql_fetch_array($lastVisitedTopicResult, MYSQL_ASSOC))
+    while($array=mysqli_fetch_array($lastVisitedTopicResult, MYSQLI_ASSOC))
     {
-      array_push($this->_logTypeArray, "{$array[logtype]}");
-      array_push($this->_lastTopicArray,  "{$array[lasttopic]}");
+      array_push($this->_logTypeArray, "{$array['logtype']}");
+      array_push($this->_lastTopicArray,  "{$array['lasttopic']}");
     }
   }
 
@@ -256,7 +256,7 @@ class UserFunctions
   {
     $onlineUserResult=$dbf->queryselect("SELECT id, username, sitename, lastlogin FROM members WHERE online='1' ORDER BY type, username;");
     $users=array();
-    while($onlineUserArray=mysql_fetch_array($onlineUserResult, MYSQL_NUM))
+    while($onlineUserArray=mysqli_fetch_array($onlineUserResult, MYSQLI_NUM))
     {
       if($this->isUserOnline($onlineUserArray[3], 600))
       {

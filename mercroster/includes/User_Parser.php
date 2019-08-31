@@ -4,7 +4,7 @@ class Userparser extends Parser
 {
   /**
    * This function is used to handle user related squeries
-   * @return unknown_type
+   * @return string
    */
   function parse()
   {
@@ -22,7 +22,7 @@ class Userparser extends Parser
         $password=md5($this->strip($_POST['curretpw']));
         $id=$this->strip($_POST['ID']);
         $result=$dbf->queryselect("SELECT id FROM members WHERE password='{$password}' and id='{$id}';");
-        $count=mysql_num_rows($result);
+        $count=mysqli_num_rows($result);
       }
       //user is editing his/her own data
       if($_SESSION['SESS_TYPE']=='1')
@@ -30,11 +30,12 @@ class Userparser extends Parser
         $aid=$this->strip($_SESSION['SESS_ID']);
         $password=md5($this->strip($_POST['curretpw']));
         $result=$dbf->queryselect("SELECT id FROM members WHERE password='{$password}' and id='{$aid}';");
-        $count=mysql_num_rows($result);
+        $count=mysqli_num_rows($result);
       }
 
       if($count==1)
       {
+          $queryArray = array();
         switch ($this->strip($_POST['QueryAction']))
         {
           case "Delete":
@@ -51,7 +52,7 @@ class Userparser extends Parser
               if($logs=="on")
               {
                 $logsResult=$dbf->queryselect("SELECT id FROM logentry WHERE opid='{$id}';");
-                while($array=mysql_fetch_array($logsResult, MYSQL_NUM))
+                while($array=mysqli_fetch_array($logsResult, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)] = "DELETE FROM comments WHERE parent='{$array[0]}';";
                 }
@@ -141,7 +142,7 @@ class Userparser extends Parser
               }
               $cookie=md5($this->strip($cookie));
               //parse query
-              $queryArray[0] = "INSERT INTO members (username, password, cookie, sitename, fname, lname, type, timeformat, timeoffset) VALUES ('{$username}', '{$newpw}', '{$cookie}', '{$sitename}', '{$fname}', '{$lname}', '{$utype}', '{$timeformat}', '{$timeoffset}');";
+              $queryArray[0] = "INSERT INTO members (username, password, cookie, sitename, fname, lname, type, timeformat, timeoffset, lastlogin, postcount) VALUES ('{$username}', '{$newpw}', '{$cookie}', '{$sitename}', '{$fname}', '{$lname}', '{$utype}', '{$timeformat}', '{$timeoffset}', 0, 0);";
               //execute query
               $dbf->queryarray($queryArray);
               //get additional data
@@ -150,7 +151,7 @@ class Userparser extends Parser
               $logTypesResult=$dbf->queryselect("SELECT id, type FROM logtypes;");//need types
               //parse additional queries
               unset($queryArray);
-              while ($userArray=mysql_fetch_array($logTypesResult, MYSQL_NUM))
+              while ($userArray=mysqli_fetch_array($logTypesResult, MYSQLI_NUM))
               {
                 $queryArray[sizeof($queryArray)]="INSERT INTO lastlog (member, logtype, lasttopic) VALUES ('{$temp}', '{$logTypesResult[0]}', '0');";
               }
@@ -297,4 +298,3 @@ class Userparser extends Parser
     return $parseheader;
   }
 }
-?>

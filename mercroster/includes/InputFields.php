@@ -8,7 +8,7 @@ class InputFields
     {
       echo "<option value='0'></option>\n";
     }
-    while($array = mysql_fetch_array($result, MYSQL_NUM))
+    while($array = mysqli_fetch_array($result, MYSQLI_NUM))
     {
       if($array[0]==$value)
       {
@@ -29,7 +29,7 @@ class InputFields
     {
       echo "<option value='0'></option>\n";
     }
-    while($array = mysql_fetch_array($result, MYSQL_NUM))
+    while($array = mysqli_fetch_array($result, MYSQLI_NUM))
     {
       if($array[0]==$value)
       {
@@ -108,16 +108,16 @@ class InputFields
     {
       echo "<option value=''>no image</option>\n";
     }
-    while($array = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($array = mysqli_fetch_array($result, MYSQLI_ASSOC))
     {
-      if($value==$array[id])
+      if($value==$array['id'])
       {
 
-        echo "<option value='{$array[id]}' selected='selected'>$array[imagename]</option>\n";
+        echo "<option value='{$array['id']}' selected='selected'>{$array['imagename']}</option>\n";
       }
       else
       {
-        echo "<option value='$array[id]'>$array[imagename]</option>\n";
+        echo "<option value='{$array['id']}'>{$array['imagename']}</option>\n";
       }
     }
     echo "</select>\n";
@@ -231,31 +231,31 @@ class InputFields
     ?>
 <td class="<?php echo"{$tdclassright}" ?>"
 	colspan="<?php echo"{$tdrightspan}" ?>"><a href="javascript:void(0);"
-	onclick="surroundText('[b]','[/b]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['b']','[/b]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/bold.png" alt="B" /></a> <a
 	href="javascript:void(0);"
-	onclick="surroundText('[i]','[/i]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['i']','[/i]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/italic.png" alt="I" /></a> <a
 	href="javascript:void(0);"
-	onclick="surroundText('[u]','[/u]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['u']','[/u]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/underline.png" alt="U" /></a> <a
 	href="javascript:void(0);"
-	onclick="surroundText('[q]','[/q]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['q']','[/q]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/quote.png" alt="Q" /></a> <a
 	href="javascript:void(0);"
-	onclick="replaceText('[hr]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="replaceText('['hr']', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/line.png" alt="B" /></a> <a
 	href="javascript:void(0);"
-	onclick="surroundText('[img]','[/img]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['img']','[/img]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/image.png" alt="image" /></a> <a
 	href="javascript:void(0);"
-	onclick="surroundText('[url]','[/url]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
+	onclick="surroundText('['url']','[/url]', document.forms.modified.<?php echo"{$name}" ?>); return false;"><img
 	style="border: 0; width: 20px; height: 20px"
 	src="./images/small/url.png" alt="image" /></a></td>
     <?php

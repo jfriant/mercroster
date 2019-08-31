@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Jdc56GHd46R5v'))
 {
   header('HTTP/1.0 404 not found');
@@ -12,18 +13,18 @@ $inputFields = new InputFields;
 require("htdocs/dbsetup.php");
 $vehicleID=$_GET['equipment'];
 $vehicleID=stripslashes($vehicleID);
-$vehicleID=mysql_real_escape_string($vehicleID);
+$vehicleID=html_escape($vehicleID);
 
 if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
 {
   if(isset($_GET['equipment']))
   {
     $vehicleResult=$dbf->queryselect("SELECT * FROM equipment WHERE id='$vehicleID';");
-    if(mysql_num_rows($vehicleResult)==1)
+    if(mysqli_num_rows($vehicleResult)==1)
     {
-      $vehicleArray=mysql_fetch_array($vehicleResult, MYSQL_BOTH);
-      $vehicleType=$vehicleArray[type];
-      $troid = $vehicleArray[troid];
+      $vehicleArray=mysqli_fetch_array($vehicleResult, MYSQLI_BOTH);
+      $vehicleType=$vehicleArray['type'];
+      $troid = $vehicleArray['troid'];
     }
     else
     {
@@ -36,17 +37,17 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
     require("htdocs/dbsetup.php");
     $vehicleType=$_GET["type"];
     $vehicleType=stripslashes($vehicleType);
-    $vehicleType=mysql_real_escape_string($vehicleType);
+    $vehicleType=html_escape($vehicleType);
   }
 
   if(!$error)
   {
     //Validating Equipment Type
     $checkResult=$dbf->queryselect("SELECT license, maxweight, minweight, weightstep, name FROM equipmenttypes WHERE id='$vehicleType';");
-    if(mysql_num_rows($checkResult)==1)
+    if(mysqli_num_rows($checkResult)==1)
     {
 
-      $checkArray = mysql_fetch_array($checkResult, MYSQL_NUM);
+      $checkArray = mysqli_fetch_array($checkResult, MYSQLI_NUM);
 
       $GKKLicenseHeader=$checkArray[0]*10000;
       $MaxWeight=$checkArray[1];
@@ -54,7 +55,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       $WeightModulo=$checkArray[3];
       $usedIDresult = $dbf->queryselect("SELECT regnumber FROM equipment WHERE Type='$vehicleType' ORDER BY 'regnumber';");
       $i=0;
-      while($usedID = mysql_fetch_array($usedIDresult, MYSQL_NUM))
+      while($usedID = mysqli_fetch_array($usedIDresult, MYSQLI_NUM))
       {
         $usedIDArray[$i] = $usedID[0];
         $i++;
@@ -104,14 +105,14 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       echo "<tr>\n";
       echo "<td class='edittableleft'>Name:</td>\n";
       echo "<td class='edittableright' colspan='6'>";
-      $inputFields->textinput("edittablecommon265","name",45,$vehicleArray[name]);
+      $inputFields->textinput("edittablecommon265","name",45,$vehicleArray['name']);
       echo "</td>\n";
       echo "</tr>\n";
       //SubType
       echo "<tr>\n";
       echo "<td class='edittableleft'>Sub type:</td>\n";
       echo "<td class='edittableright' colspan='6'>";
-      $inputFields->textinput("edittablecommon265","subtype",45,$vehicleArray[subtype]);
+      $inputFields->textinput("edittablecommon265","subtype",45,$vehicleArray['subtype']);
       echo "</td>\n";
       echo "</tr>\n";
       //GKKID
@@ -122,7 +123,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       $counter=0;
       for($i=1;$i<1001;$i++)
       {
-        if(($GKKLicenseHeader+$i)==$vehicleArray[regnumber])
+        if(($GKKLicenseHeader+$i)==$vehicleArray['regnumber'])
         {
           $temp=$GKKLicenseHeader+$i;
           echo "<option value='{$temp}' selected='selected'>$temp</option>\n";
@@ -151,7 +152,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       echo "<select class='edittablebox' name='weight'>\n";
       for($i=$MinWeight;$i<$MaxWeight+1;$i=$i+$WeightModulo)
       {
-        if($i==$vehicleArray[weight])
+        if($i==$vehicleArray['weight'])
         {
           echo "<option value='{$i}' selected='selected'>$i</option>\n";
         }
@@ -169,7 +170,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       echo "<td class='edittableright' colspan='6'>\n";
       echo "<select class='edittablebox' name='tro'>\n";
       echo "<option value='0'>No TRO</option>\n";
-      while($availableTroArray = mysql_fetch_array($troAvailable, MYSQL_NUM))
+      while($availableTroArray = mysqli_fetch_array($troAvailable, MYSQLI_NUM))
       {
       	if($availableTroArray[0] == $troid) {
       		echo "<option value='{$availableTroArray[0]}' selected='selected'>{$availableTroArray[1]}</option>\n";	
@@ -185,12 +186,12 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='4')
       echo "<tr>\n";
       echo "<td class='edittableleft'>Image:</td>\n";
       echo "<td colspan='6'>\n";
-      $inputFields->dropboxarscript($equipmentimages, $vehicleArray[image], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"equipmentimages\")'", true);
+      $inputFields->dropboxarscript($equipmentimages, $vehicleArray['image'], "image", "edittablebox", "onchange='javascript:change_image(this.value, \"equipmentimages\")'", true);
       echo "</td>\n";
       echo "<td><img id='equipmentimages' class='unittypeimage' src='./images/equipmentimages/{$checkArray[14]}' alt='{$checkArray[14]}' /></td>\n";
       echo "</tr>\n";
       //Notes
-      $inputFields->textarea("edittableleft", "edittableright", 6, "Notes", "edittablecommon", "notes", $vehicleArray[notes]);
+      $inputFields->textarea("edittableleft", "edittableright", 6, "Notes", "edittablecommon", "notes", $vehicleArray['notes']);
       echo "<tr><td colspan='7'><hr /></td></tr>\n";
       echo "<tr>\n";
       echo "<td colspan='2' class='edittablebottom'>\n";

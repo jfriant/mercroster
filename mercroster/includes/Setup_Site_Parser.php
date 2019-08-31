@@ -16,7 +16,7 @@ class Setupsiteparser extends Parser
       {
         $newpos=$prefpos-1;
       }
-      $usedCrewTypeArray=mysql_fetch_array($dbf->queryselect("SELECT id FROM {$type} WHERE prefpos='{$newpos}';"), MYSQL_NUM);
+      $usedCrewTypeArray=mysqli_fetch_array($dbf->queryselect("SELECT id FROM {$type} WHERE prefpos='{$newpos}';"), MYSQLI_NUM);
       $otherid=$usedCrewTypeArray[0];
 
       //echo "{$ID}=> {$newpos} | {$otherid}=>{$prefpos}";
@@ -50,7 +50,7 @@ class Setupsiteparser extends Parser
                 $queryArray[sizeof($queryArray)]="DELETE FROM lastlog WHERE logtype='{$id}';";
                 $queryArray[sizeof($queryArray)]="DELETE FROM logsvisited WHERE logtype='{$id}';";
                 $positionresult=$dbf->queryselect("SELECT id, prefpos FROM logtypes WHERE prefpos>'{$prefpos}';");
-                while($array = mysql_fetch_array($positionresult, MYSQL_NUM))
+                while($array = mysqli_fetch_array($positionresult, MYSQLI_NUM))
                 {
                   $pp = $array[1]-1;
                   $queryArray[sizeof($queryArray)] = "UPDATE logtypes SET prefpos='{$pp}' WHERE id='{$array[0]}';";
@@ -204,7 +204,7 @@ class Setupsiteparser extends Parser
                 //$temp=$nextidArray[0]+1;
                 $queryArray[sizeof($queryArray)]="INSERT INTO logtypes (id, type, start, end, location, text, contract, writepermission, readpermission, prefpos) VALUES ('{$temp}', '{$logtype}', '{$start}', '{$end}', '{$location}', '{$text}', '{$contract}', '{$writepermission}', '{$readpermission}', '{$logtypesnumber}');";
                 $userResult=$dbf->queryselect("SELECT id, type FROM members;");
-                while ($userArray=mysql_fetch_array($userResult, MYSQL_NUM))
+                while ($userArray=mysqli_fetch_array($userResult, MYSQLI_NUM))
                 {
                   $queryArray[sizeof($queryArray)]="INSERT INTO lastlog (member, logtype, lasttopic) VALUES ('{$userArray[0]}', '{$temp}', '0');";
                 }
@@ -239,7 +239,7 @@ class Setupsiteparser extends Parser
           {
             case "Change":
             	$optionResult = $dbf->queryselect("SELECT id, name, value FROM options;");
-            	while($optionArray=mysql_fetch_array($optionResult, MYSQL_NUM)) {
+            	while($optionArray=mysqli_fetch_array($optionResult, MYSQLI_NUM)) {
             		$value = $this->strip($_POST["{$optionArray[0]}"]);
             		if($value=="on")
                     {

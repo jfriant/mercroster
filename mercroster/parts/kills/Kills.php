@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('Ksf4t6Gws3'))
 {
   header('HTTP/1.0 404 not found');
@@ -8,7 +9,7 @@ if(!defined('Ksf4t6Gws3'))
 include("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 if(!isset($first))
 {
   $first=0;
@@ -16,7 +17,7 @@ if(!isset($first))
 
 $o=$_GET['order'];
 $o=stripslashes($o);
-$o=mysql_real_escape_string($o);
+$o=html_escape($o);
 
 include("includes/PageBar.php");
 $pb=new PageBar;
@@ -71,7 +72,7 @@ if($rnumber>0)
   echo "</tr>\n";
   echo "</thead>\n";
   echo "<tbody class='rostertable'>\n";
-  while($array=mysql_fetch_array($killsResult, MYSQL_NUM))
+  while($array=mysqli_fetch_array($killsResult, MYSQLI_NUM))
   {
     $date=$dp->datestring($array[4]);
     echo "<tr>\n";

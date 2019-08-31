@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('hd7jkV4dg78'))
 {
   header('HTTP/1.0 404 not found');
@@ -32,7 +33,7 @@ function inarray($array, $column, $value)
 function getfirstfreeslot($dbf, $id)
 {
   $result = $dbf->queryselect("SELECT id FROM unit WHERE Parent='$id';");
-  $count=mysql_num_rows($result);
+  $count=mysqli_num_rows($result);
   return $count;
 }
 
@@ -42,7 +43,7 @@ $inputFields = new InputFields;
 require("htdocs/dbsetup.php");
 $unit=$_GET["unit"];
 $unit=stripslashes($unit);
-$unit=mysql_real_escape_string($unit);
+$unit=html_escape($unit);
 if($unit!=0)
 {
   $AddChange="Save";
@@ -64,10 +65,10 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
   {
     //Validating Unit Type if editing existing unit
     $checkResult = $dbf->queryselect("SELECT id, type, name, limage, rimage, parent, level, prefpos, text FROM unit WHERE id='$unit';");
-    if(mysql_num_rows($checkResult)==1)
+    if(mysqli_num_rows($checkResult)==1)
     {
 
-      $checkArray = mysql_fetch_array($checkResult, MYSQL_NUM);
+      $checkArray = mysqli_fetch_array($checkResult, MYSQLI_NUM);
 
       $parentarray = $dbf->resulttoarraysingle($dbf->queryselect("SELECT id, level FROM unit WHERE id='$checkArray[6]';"));
       if($parentarray[1]>0)
@@ -75,10 +76,10 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
         $parentunitlevel=$parentarray[1];
       }
       $parentResult = $dbf->queryselect("SELECT id, level FROM unit WHERE id='$checkArray[5]';");
-      $parentCount=mysql_num_rows($parentResult);
+      $parentCount=mysqli_num_rows($parentResult);
       if($parentCount==1)
       {
-        $parentarray = mysql_fetch_array($parentResult, MYSQL_NUM);
+        $parentarray = mysqli_fetch_array($parentResult, MYSQLI_NUM);
         if($parentarray[1]>0)
         {
           $parentunitlevel=$parentarray[1];
@@ -105,7 +106,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
 
       //Checking if this unit contains crews
       $crewResult = $dbf->queryselect("SELECT c.id, r.rankname, c.lname, c.fname FROM crew c LEFT JOIN ranks r ON c.rank=r.number WHERE parent='$unit';");
-      $crewCheckCount=mysql_num_rows($crewResult);
+      $crewCheckCount=mysqli_num_rows($crewResult);
 
       //If unit contains personels, Feching needed personel data
       if ($crewCheckCount!=0 || ($organizationCheckCount==0 && $crewCheckCount==0))
@@ -113,7 +114,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
         $type=2;
         $freeCrewResult = $dbf->queryselect("SELECT c.ID, r.rankname, c.LName, c.FName FROM crew c LEFT JOIN ranks r ON c.Rank=r.number WHERE Parent=0 AND Status='Active';");
         $i=0;
-        while($array = mysql_fetch_array($freeCrewResult, MYSQL_NUM))
+        while($array = mysqli_fetch_array($freeCrewResult, MYSQLI_NUM))
         {
           $freeCrewArray[$i]=$array;
           $i++;
@@ -203,7 +204,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
     echo "<td>\n";
     echo "<select class='edittablebox' name='level' onchange='javascript:change_unitlevel_image(this.value)'>\n";
     $level=0;
-    while($array = mysql_fetch_array($unitlevelresult, MYSQL_NUM))
+    while($array = mysqli_fetch_array($unitlevelresult, MYSQLI_NUM))
     {
       if($checkArray[6]==$array[0])
       {
@@ -316,7 +317,7 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_TYPE']<='3')
         echo "<td>\n";
         echo "<table border='0'>\n";
 
-        while($array =  mysql_fetch_array($crewResult, MYSQL_NUM))
+        while($array =  mysqli_fetch_array($crewResult, MYSQLI_NUM))
         {
           echo "<tr>\n";
           echo "<td>Personnel:</td>\n";

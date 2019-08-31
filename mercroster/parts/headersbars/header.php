@@ -49,8 +49,8 @@ function change_unitlevel_image(val)
 <?php
     foreach ($unitlevelimageArray as $unitlevelimage) 
     {
-      echo "  case '{$unitlevelimage[id]}':\n";
-	  echo "    var imagesrc='./images/unitlevel/{$unitlevelimage[picture]}';\n";
+      echo "  case '{$unitlevelimage['id']}':\n";
+	  echo "    var imagesrc='./images/unitlevel/{$unitlevelimage['picture']}';\n";
 	  echo "    break;\n";
 	}
 ?>

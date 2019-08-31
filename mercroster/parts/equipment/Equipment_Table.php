@@ -1,4 +1,5 @@
 <?php
+include_once "includes/StringFunctions.php";
 if(!defined('d5Uy76hG54'))
 {
   header('HTTP/1.0 404 not found');
@@ -15,11 +16,11 @@ $gblf = new GlobalFunctions;
 require("htdocs/dbsetup.php");
 $first=$_GET['first'];
 $first=stripslashes($first);
-$first=mysql_real_escape_string($first);
+$first=html_escape($first);
 
 $vehicleType=$_GET["type"];
 $vehicleType=stripslashes($vehicleType);
-$vehicleType=mysql_real_escape_string($vehicleType);
+$vehicleType=html_escape($vehicleType);
 
 require("includes/PageBar.php");
 $pb=new PageBar;
@@ -29,7 +30,7 @@ if(isset($_GET["type"]))
   $range=30;
   //Validating Personel Type
   $checkResult = $dbf->queryselect("SELECT name FROM equipmenttypes WHERE id='$vehicleType';");
-  if(mysql_num_rows($checkResult)==1)
+  if(mysqli_num_rows($checkResult)==1)
   {
     //Need to determine what type of roster to fecth from database
     $query = "SELECT v.id, v.type, v.name, v.subtype, v.crew, v.weight, v.regnumber, v.notes, c.lname, c.fname, et.weightscale, c.id FROM equipment v LEFT JOIN crew c ON v.Crew=c.id LEFT JOIN equipmenttypes et ON v.type=et.id WHERE v.type='$vehicleType' ORDER BY";
@@ -50,7 +51,7 @@ if(isset($_GET["type"]))
     }
     $vehicleSQLQeury = $query. " " . $order . " LIMIT $first, $range;";
     $vehicleResult = $dbf->queryselect($vehicleSQLQeury);
-    $checkArray=mysql_fetch_array($checkResult, MYSQL_NUM);
+    $checkArray=mysqli_fetch_array($checkResult, MYSQLI_NUM);
 
     $rResult = $dbf->queryselect("SELECT COUNT(*) count FROM equipment WHERE type='$vehicleType';");
     $rnumber = mysql_result($rResult, 0);
@@ -85,7 +86,7 @@ if(isset($_GET["type"]))
       echo "</tr>\n";
       echo "</thead>\n";
       echo "<tbody class='rostertable'>\n";
-      while($array = mysql_fetch_array($vehicleResult, MYSQL_NUM))
+      while($array = mysqli_fetch_array($vehicleResult, MYSQLI_NUM))
       {
         echo "<tr>\n";
         echo "<td class='rostertable'><a class='rostertable' href='index.php?action=equipment&amp;equipment={$array[0]}'>{$array[6]}</a></td>\n";//number
@@ -135,7 +136,7 @@ else
   $range = 30;
   $link="equipmenttable";
   $equipmentTypeResult=$dbf->queryselect("SELECT id, name, requirement, count FROM equipmenttypes e LEFT JOIN (SELECT type, COUNT(type) AS count FROM equipment GROUP BY type) v ON e.id=v.type WHERE used='1' ORDER BY e.prefpos ASC LIMIT $first, $range;");
-  $rnumber=mysql_num_rows($equipmentTypeResult);
+  $rnumber=mysqli_num_rows($equipmentTypeResult);
 
   echo "<div id='content'>\n";
   if($rnumber>0)
@@ -153,7 +154,7 @@ else
     echo "</thead>\n";
     echo "<tbody class='rostertable'>\n";
     $counter=0;
-    while($array = mysql_fetch_array($equipmentTypeResult, MYSQL_BOTH))
+    while($array = mysqli_fetch_array($equipmentTypeResult, MYSQLI_BOTH))
     {
       if($array['requirement']!=0 || $array['requirement']!="" || ($_SESSION['SESS_TYPE']<=4 && $_SESSION['SESS_TYPE']>=1))
       {
