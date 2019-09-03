@@ -3,7 +3,7 @@ require("includes/Parser.php");
 class Userparser extends Parser
 {
   /**
-   * This function is used to handle user related squeries
+   * This function is used to handle user related queries
    * @return string
    */
   function parse()
@@ -119,11 +119,14 @@ class Userparser extends Parser
             {
               $errMSG=($errMSG==""? "4": "{$errMSG}.4");
             }
-            if($newpw=="" || $repeatpw=="" || $newpw!=$repeatpw || !ctype_alnum($newpw))
+            # set some default for the time display
+            if ($timeformat == "") { $timeformat = "d.m.Y - H:i:s"; }
+            if ($timeoffset == "") { $timeoffset = "0"; }
+
+            if($newpw=="" || $repeatpw=="" || $newpw!==$repeatpw || !ctype_alnum($newpw))
             {
               $errMSG=($errMSG==""? "5": "{$errMSG}.5");;
             }
-
 
             if($errMSG=="")
             {
@@ -153,7 +156,7 @@ class Userparser extends Parser
               unset($queryArray);
               while ($userArray=mysqli_fetch_array($logTypesResult, MYSQLI_NUM))
               {
-                $queryArray[sizeof($queryArray)]="INSERT INTO lastlog (member, logtype, lasttopic) VALUES ('{$temp}', '{$logTypesResult[0]}', '0');";
+                $queryArray[sizeof($queryArray)]="INSERT INTO lastlog (member, logtype, lasttopic) VALUES ('{$userID}', '{$userArray[0]}', '0');";
               }
               //execute query
               $dbf->queryarray($queryArray);
@@ -176,6 +179,7 @@ class Userparser extends Parser
           case "Change":
             if($this->checkposint($_POST['ID']))
             {
+                $errMSG = "";
               //get parameters
               $id=$this->strip($_POST['ID']);
               $username=$this->strip($_POST['username']);
@@ -185,11 +189,10 @@ class Userparser extends Parser
               $utype=$this->strip($_POST['utype']);
               $timeformat=$this->strip($_POST['timeformat']);
               $timeoffset=$this->strip($_POST['timeoffset']);
-              $favoredunit=$this->strip($_POST['favoredunit']);
+              if (isset($_POST['favoredunit'])) { $favoredunit=$this->strip($_POST['favoredunit']); } else { $favoredunit = '0'; }
 
               $newpw=$this->strip($_POST['newpw']);
               $repeatpw=$this->strip($_POST['repeat']);
-
 
               if($this->strip($_POST['name'])=="")
               {

@@ -245,10 +245,10 @@ if(isset($_SESSION['SESS_ID']) && $_SESSION['SESS_ID']!="" && $_SESSION['SESS_ID
 
       echo "<tr><td colspan='2'><hr class='profiledatatable' /></td></tr>\n";
 
-      echo "<tr><td colspan='2' class='edittableleft'><small>Administrator's Password is required to chance any information</small></td></tr>\n";
+      echo "<tr><td colspan='2' class='edittableleft'><small>Administrator's Password is required to change any information</small></td></tr>\n";
       echo "<tr>\n";
       echo "<td class='edittableleft'>Admin's Password:</td>\n";
-      echo "<td><input class='edittablecommon265' name='curretpw' type='password' maxlength='60' value='$userArray[2]' /></td>\n";
+      echo "<td><input class='edittablecommon265' name='curretpw' type='password' maxlength='60' value='' /></td>\n";
       echo "</tr>\n";
 
       echo "<tr><td colspan='2'><hr class='profiledatatable' /></td></tr>\n";
