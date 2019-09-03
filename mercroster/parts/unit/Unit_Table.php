@@ -541,7 +541,9 @@ $a = array();
 $upper = array();
 if($parent==0)
 {
-  $title="Units Deteched from Table of Organization";
+  $title="Units Detached from Table of Organization";
+  $a[6] = 'empty.png';
+  $a[8] = '1';
 }
 else
 {
