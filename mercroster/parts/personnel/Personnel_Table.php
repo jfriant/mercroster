@@ -246,7 +246,7 @@ if(isset($_GET["type"]))
 
   //echo "$personelQeury\n";
   $mod=0;
-  if(sizeof($personnelResult)>0)
+  if($personnelResult->num_rows > 0)
   {
     echo "<div id='content'>\n";
     echo "<h1 class='headercenter'>{$title}s</h1>\n";

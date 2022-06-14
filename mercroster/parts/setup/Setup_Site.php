@@ -472,7 +472,7 @@ else
         echo "<input type='hidden' name='QueryType' value='logtype' /> \n";
         echo "<input type='hidden' name='QueryAction' value='AddChange' /> \n";
         echo "<input class='setuptablebutton' name='QueryAction' type='submit' value='Change' /> \n";
-        if (!in_array($logTypeArray['id'], $usedlogtypeArray))
+        if ($usedlogtypeArray != null && !in_array($logTypeArray['id'], $usedlogtypeArray))
         {
           echo "<input class='setuptablebutton' name='QueryAction' type='submit' value='Delete' onclick='return confirmSubmit(\"Delete\")' />\n";
         }

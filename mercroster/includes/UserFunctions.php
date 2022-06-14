@@ -73,10 +73,10 @@ class UserFunctions
   {
     $tbl_name="members";
     $line=$_COOKIE['mrrinf'];
-    if (get_magic_quotes_gpc())
-    {
-      $line = stripslashes($line);
-    }
+    //if (get_magic_quotes_gpc())
+    //{
+    //  $line = stripslashes($line);
+    //}
     list($id, $cookie) = unserialize($line);
     $result = $dbf->queryselect("SELECT id, type, username FROM $tbl_name WHERE cookie='{$cookie}' and id='{$id}'");
 
@@ -156,7 +156,7 @@ class UserFunctions
       $this->_registerd=1;
       $ip=$this->strip($ip);
       $ipResult=$dbf->queryselect("SELECT COUNT(ipaddress) AS count, logins, logged FROM guests WHERE ipaddress=INET_ATON('{$ip}') GROUP BY ipaddress;");
-      $ipArray=mysqli_fetch_array($ipResult, mysqli_ASSOC);
+      $ipArray=mysqli_fetch_array($ipResult, MYSQLI_ASSOC);
       if($ipArray['count']==1)
       {
         $queryArray[0]="UPDATE guests SET logged='0' WHERE ipaddress=INET_ATON('{$ip}');";
